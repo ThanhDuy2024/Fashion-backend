@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT;
 
 database.connect();
+app.use(express.json());
 
 app.use("/api/admin", adminRoute)
 
