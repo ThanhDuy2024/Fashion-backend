@@ -85,8 +85,18 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const profile = async (req: admin, res: Response) => {
+  const finalData = {
+    fullName: req.admin.fullName,
+    email: req.admin.email,
+    image: req.admin.image ? req.admin.image : "",
+    phone: req.admin.phone ? req.admin.phone : "",
+    address: req.admin.address ? req.admin.address : "",
+    roleName: "Quay lai lam sau khi co collection role",
+    status: req.admin.status,
+  }
+
   res.json({
     code: "success",
-    data: req.admin
+    data: finalData
   })
 }
