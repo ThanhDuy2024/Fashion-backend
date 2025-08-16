@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { admin } from "../../interface/admin.interface";
 export const register = async (req: Request, res: Response) => {
   const check = await AccountAdmin.findOne({
     email: req.body.email,
@@ -60,7 +61,7 @@ export const login = async (req: Request, res: Response) => {
     fullName: check.fullName,
     email: check.email
   }, String(process.env.JWT_ACCESS_TOKEN), {
-    expiresIn: 1 * 60 * 1000
+    expiresIn: "1h"
   });
 
   const refreshToken = jwt.sign({
@@ -83,9 +84,9 @@ export const login = async (req: Request, res: Response) => {
   })
 }
 
-export const profile = async (req: Request, res: Response) => {
+export const profile = async (req: admin, res: Response) => {
   res.json({
     code: "success",
-    message: "Get profile complete"
+    data: req.admin
   })
 }
