@@ -12,7 +12,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(cors({
-  origin: "*",
+  origin: String(process.env.PORT_FE),
   methods: ['GET', 'PUT', 'POST', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, //cho phep gui cookie
