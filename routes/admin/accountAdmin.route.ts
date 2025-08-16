@@ -5,4 +5,7 @@ const route = Router();
 
 route.post("/register", validate.registerValidate, accountAdminController.register);
 
+route.post("/login", validate.loginValidate, accountAdminController.login);
+
+route.get("/profile", accountAdminController.profile);
 export default route;

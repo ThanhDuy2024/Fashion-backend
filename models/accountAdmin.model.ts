@@ -11,7 +11,10 @@ const schema = new Schema({
   phone: String,
   image: String,
   roleId: String,
-  status: String,
+  status: {
+    type: String,
+    default: "active"
+  },
   deleted: {
     type: Boolean,
     default: false
