@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { JwtHeader, JwtPayload } from "jsonwebtoken";
 import { admin } from "../../interface/admin.interface";
+
 export const register = async (req: Request, res: Response) => {
   const check = await AccountAdmin.findOne({
     email: req.body.email,
@@ -68,12 +69,12 @@ export const login = async (req: Request, res: Response) => {
     fullName: check.fullName,
     email: check.email
   }, String(process.env.JWT_REFRESH_TOKEN), {
-    expiresIn: 2 * 60 * 1000
+    expiresIn: 30 * 24 * 60 * 60 * 1000
   })
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    maxAge: 2 * 60 * 1000,
+    maxAge: 30 * 24 * 60 * 60 * 1000,
     secure: true,
     sameSite: "none"
   })
@@ -99,4 +100,54 @@ export const profile = async (req: admin, res: Response) => {
     code: "success",
     data: finalData
   })
+}
+
+export const refresh = async (req: Request, res: Response) => {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    
+    if(!refreshToken) {
+      res.status(404).json({
+        code: "error",
+        message: "Your token is expired!"
+      });
+      return;
+    }
+
+    const verify = jwt.verify(String(refreshToken), String(process.env.JWT_REFRESH_TOKEN)) as JwtPayload;
+
+    const check = await AccountAdmin.findOne({
+      email: verify.email,
+      deleted: false,
+      status: "active"
+    });
+
+    if(!check) {
+      res.clearCookie("refreshToken", refreshToken);
+      res.status(404).json({
+        code: "error",
+        message: "Verify refresh token error!"
+      });
+      return;
+    }
+
+    const accessToken = jwt.sign({
+      fullName: check.fullName,
+      email: check.email,
+    }, String(process.env.JWT_ACCESS_TOKEN), {
+      expiresIn: "1h"
+    })
+
+    res.json({
+      code: "success",
+      message: "Refresh token has been completed!",
+      accessToken: accessToken
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: "Refresh token expire in!"
+    });
+  }
 }

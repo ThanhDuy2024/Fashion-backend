@@ -1,12 +1,14 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors"
+import cookieParser from "cookie-parser";
 import adminRoute from "./routes/admin/index.route";
 import * as database from "./configs/database";
 const app = express();
 const port = process.env.PORT;
 
 database.connect();
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(cors({

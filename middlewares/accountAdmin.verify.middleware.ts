@@ -4,8 +4,8 @@ import { admin } from "../interface/admin.interface";
 import { AccountAdmin } from "../models/accountAdmin.model";
 
 export const verifyAccount = async (req: admin, res: Response, next: NextFunction) => {
-  const accessToken = req.headers.authorization;
   try {
+    const accessToken = req.headers.authorization;
     const verifyToken = jwt.verify(String(accessToken), String(process.env.JWT_ACCESS_TOKEN)) as JwtPayload;
     const check = await AccountAdmin.findOne({
       email: verifyToken.email,

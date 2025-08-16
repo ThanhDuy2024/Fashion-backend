@@ -9,4 +9,6 @@ route.post("/register", validate.registerValidate, accountAdminController.regist
 route.post("/login", validate.loginValidate, accountAdminController.login);
 
 route.get("/profile", middleware.verifyAccount, accountAdminController.profile);
+
+route.post("/refresh", accountAdminController.refresh);
 export default route;
