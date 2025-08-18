@@ -43,7 +43,6 @@ export const categoryCreate = async (req: admin, res: Response) => {
 
     req.body.createdBy = req.admin.id;
     req.body.updatedBy = req.admin.id;
-    console.log(req.body);
 
     const newCategory = new Categories(req.body);
     newCategory.save();
