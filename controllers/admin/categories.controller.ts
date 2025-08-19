@@ -1,6 +1,8 @@
 import { Response } from "express"
 import { admin } from "../../interface/admin.interface"
 import { Categories } from "../../models/categories.model";
+import moment from "moment";
+import categoryTree from "../../helpers/category.helper";
 
 export const categoryCreate = async (req: admin, res: Response) => {
   try {
@@ -17,7 +19,6 @@ export const categoryCreate = async (req: admin, res: Response) => {
       req.body.position = totalCategory;
     }
 
-    let flag = "ok";
     if (!req.body.parentCategoryId) {
       req.body.parentCategoryId = []
     } else {
@@ -56,4 +57,40 @@ export const categoryCreate = async (req: admin, res: Response) => {
       message: "Your parent category id invalid!"
     })
   }
+}
+
+export const categoryList = async (req: admin, res: Response) => {
+  const find:any = {
+    deleted: false
+  }
+  const record = await Categories.find(find)
+    .sort({
+      position: "desc"
+    });
+  
+  const data:any = []
+  
+  for (const item of record) {
+    const rawData:any = {
+      id: item.id,
+      name: item.name,
+      image: item.image ? item.image : "",
+      status: item.status,
+      parentCategoryId: item.parentCategoryId,
+      createdAtFormat: "",
+      updatedAtFormat: "",
+    }
+
+    rawData.createdAtFormat = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
+    rawData.updatedAtFormat = moment(item.updatedAt).format("HH:mm DD/MM/YYYY");
+
+    data.push(rawData);
+  }
+
+  const dataFinal = categoryTree(data);
+
+  res.json({
+    code: "success",
+    data: dataFinal
+  })
 }
