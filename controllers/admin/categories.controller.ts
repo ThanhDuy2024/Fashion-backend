@@ -4,6 +4,8 @@ import { Categories } from "../../models/categories.model";
 import moment from "moment";
 import categoryTree from "../../helpers/category.helper";
 import { AccountAdmin } from "../../models/accountAdmin.model";
+import slugify from "slugify";
+import { pagination } from "../../helpers/pagination.helper";
 
 export const categoryCreate = async (req: admin, res: Response) => {
   try {
@@ -64,7 +66,47 @@ export const categoryList = async (req: admin, res: Response) => {
   const find:any = {
     deleted: false
   }
-  const record = await Categories.find(find)
+  const { search, status, startDate, endDate, page } = req.query;
+
+  //search
+  if(search) {
+    const keyword = slugify(String(search), {
+      lower: true
+    });
+    const regex = new RegExp(keyword);
+    find.slug = regex;
+  }
+  //end search
+
+  //status filter
+  if(status === "active" || status === "inactive") {
+    find.status = status;
+  }
+  //end status filter
+
+  //days filter
+  if(startDate && endDate) {
+    const startDateFormat = moment(String(startDate)).startOf("date").toDate();
+    const endDateFormat = moment(String(endDate)).endOf('date').toDate();
+    const date:any = {
+      $gte: startDateFormat,
+      $lte: endDateFormat,
+    }
+    find.createdAt = date;
+  }
+  //end days filter
+
+  //pagination 
+  let pageNumber:any = 1;
+  if(page) {
+    pageNumber = page;
+  } 
+  const countDocuments = await Categories.countDocuments(find);
+
+  const paginationHelper = pagination(countDocuments, parseInt(pageNumber))
+  //end pagination
+
+  const record = await Categories.find(find).limit(paginationHelper.limit).skip(paginationHelper.skip)
     .sort({
       position: "desc"
     });
@@ -88,11 +130,12 @@ export const categoryList = async (req: admin, res: Response) => {
     data.push(rawData);
   }
 
-  const dataFinal = categoryTree(data);
+  //const dataFinal = categoryTree(data);
 
   res.json({
     code: "success",
-    data: dataFinal
+    data: data,
+    totalPage: paginationHelper.totalPage
   })
 }
 
