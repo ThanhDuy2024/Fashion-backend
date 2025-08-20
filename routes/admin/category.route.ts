@@ -17,4 +17,6 @@ route.get('/detail/:id', categoriesController.categoryDetail);
 
 route.patch('/edit/:id', upload.single('image'), validate.categoriesValidate, categoriesController.categoryEdit);
 
+route.get('/tree', categoriesController.categoriesTree);
+
 export default route;
