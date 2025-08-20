@@ -13,4 +13,6 @@ route.post('/create', upload.single("image"), validate.categoriesValidate, categ
 
 route.get('/list', categoriesController.categoryList);
 
+route.get('/detail/:id', categoriesController.categoryDetail);
+
 export default route;

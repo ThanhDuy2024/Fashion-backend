@@ -3,6 +3,7 @@ import { admin } from "../../interface/admin.interface"
 import { Categories } from "../../models/categories.model";
 import moment from "moment";
 import categoryTree from "../../helpers/category.helper";
+import { AccountAdmin } from "../../models/accountAdmin.model";
 
 export const categoryCreate = async (req: admin, res: Response) => {
   try {
@@ -93,4 +94,65 @@ export const categoryList = async (req: admin, res: Response) => {
     code: "success",
     data: dataFinal
   })
+}
+
+export const categoryDetail = async (req: admin, res: Response) => {
+  try {
+    const id = req.params.id;
+    const category = await Categories.findOne({
+      _id: id,
+      deleted: false,
+    });
+
+    if(!category) {
+      res.status(404).json({
+        code: "error",
+        message: "The category is not found!"
+      });
+      return;
+    }
+    const dataFinal:any = {
+      id: category.id,
+      name: category.name,
+      parentCategoryId: category.parentCategoryId,
+      image: category.image || "",
+      position: category.position,
+      status: category.status,
+      createdAtFormat: "",
+      updatedAtFormat: "",
+      createdByFormat: "",
+      updatedByFormat: "",
+    }
+
+    dataFinal.createdAtFormat = moment(category.createdAt).format("HH:mm DD/MM/YYYY");
+    dataFinal.updatedAtFormat = moment(category.updatedAt).format("HH:mm DD/MM/YYYY");
+
+    const createdByName = await AccountAdmin.findOne({
+      _id: category.createdBy,
+      deleted: false,
+    })
+
+    if(createdByName) {
+      dataFinal.createdByFormat = createdByName.fullName;
+    }
+
+    const updateByName = await AccountAdmin.findOne({
+      _id: category.updatedBy,
+      deleted: false,
+    })
+
+    if(updateByName) {
+      dataFinal.updatedByFormat = updateByName.fullName;
+    }
+
+    res.json({
+      code: "success",
+      data: dataFinal
+    })
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "categoryId invalid!"
+    })
+  }
 }

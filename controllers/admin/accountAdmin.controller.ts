@@ -62,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
     fullName: check.fullName,
     email: check.email
   }, String(process.env.JWT_ACCESS_TOKEN), {
-    expiresIn: "1h"
+    expiresIn: "5h"
   });
 
   const refreshToken = jwt.sign({
