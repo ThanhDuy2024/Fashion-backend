@@ -199,3 +199,73 @@ export const categoryDetail = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const categoryEdit = async (req: admin, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    const category = await Categories.findOne({
+      _id: id,
+      deleted: false,
+    });
+
+    if(!category) {
+      res.status(404).json({
+        code: "error",
+        message: "The category has not been existed!"
+      });
+      return;
+    }
+
+    if(req.file) {
+      req.body.image = req.file.path;
+    } else {
+      delete req.body.image;
+    }
+
+    if(req.body.position) {
+      req.body.position = parseInt(req.body.position);
+    } else {
+      req.body.position = await Categories.countDocuments() + 1;
+    }
+
+    if(req.body.parentCategoryId.length === 0) {
+      req.body.parentCategoryId = [];
+    } else {
+      req.body.parentCategoryId = JSON.parse(req.body.parentCategoryId);
+      req.body.parentCategoryId = new Set(req.body.parentCategoryId);
+      req.body.parentCategoryId = Array.from(req.body.parentCategoryId);
+
+      for (const item of req.body.parentCategoryId) {
+        const check = await Categories.findOne({
+          _id: item,
+          deleted: false
+        })
+        
+        if(!check) {
+          res.status(404).json({
+            code: "error",
+            message: "Some categoryId not existed!"
+          });
+          return;
+        }
+      }
+    }
+    req.body.updatedBy = req.admin.id;
+
+    await Categories.updateOne({
+      _id: category.id,
+      deleted: false
+    }, req.body);
+
+    res.json({
+      code: "success",
+      message: "The category has been edited!"
+    });
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "The category id invalid!"
+    })
+  }
+}

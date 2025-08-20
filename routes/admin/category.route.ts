@@ -15,4 +15,6 @@ route.get('/list', categoriesController.categoryList);
 
 route.get('/detail/:id', categoriesController.categoryDetail);
 
+route.patch('/edit/:id', upload.single('image'), validate.categoriesValidate, categoriesController.categoryEdit);
+
 export default route;
