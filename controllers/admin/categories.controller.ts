@@ -119,7 +119,6 @@ export const categoryList = async (req: admin, res: Response) => {
       name: item.name,
       image: item.image ? item.image : "",
       status: item.status,
-      parentCategoryId: item.parentCategoryId,
       createdAtFormat: "",
       updatedAtFormat: "",
     }
@@ -157,7 +156,7 @@ export const categoryDetail = async (req: admin, res: Response) => {
     const dataFinal:any = {
       id: category.id,
       name: category.name,
-      parentCategoryId: category.parentCategoryId,
+      parentCategoryId: [],
       image: category.image || "",
       position: category.position,
       status: category.status,
@@ -166,6 +165,17 @@ export const categoryDetail = async (req: admin, res: Response) => {
       createdByFormat: "",
       updatedByFormat: "",
     }
+
+     for (const item of category.parentCategoryId) {
+      const check = await Categories.findOne({
+        _id: item,
+        deleted: false
+      });
+
+      if(check) {
+        dataFinal.parentCategoryId.push(item);
+      }
+     }
 
     dataFinal.createdAtFormat = moment(category.createdAt).format("HH:mm DD/MM/YYYY");
     dataFinal.updatedAtFormat = moment(category.updatedAt).format("HH:mm DD/MM/YYYY");
