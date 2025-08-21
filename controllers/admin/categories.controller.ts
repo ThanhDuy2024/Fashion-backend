@@ -1,4 +1,4 @@
-import { raw, Response } from "express"
+import { Response } from "express"
 import { admin } from "../../interface/admin.interface"
 import { Categories } from "../../models/categories.model";
 import moment from "moment";
@@ -439,4 +439,39 @@ export const categoryTrashList = async (req: admin, res: Response) => {
     data: data,
     totalPage: paginationHelper.totalPage
   })
+}
+
+export const categoriesTrashRestore = async (req: admin, res: Response) => {
+  try {
+    const id = req.params.id;
+    const check = await Categories.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The category has not been existed!"
+      });
+      return;
+    }
+
+    await Categories.updateOne({
+      _id: id,
+      deleted: true
+    }, {
+      deleted: false,
+      updatedBy: req.admin.id,
+    })
+    res.json({
+      code: "success",
+      message: "The category has been restored!"
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "Invalid categoryId!"
+    })
+  }
 }
