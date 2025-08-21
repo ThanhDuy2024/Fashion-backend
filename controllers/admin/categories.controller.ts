@@ -325,3 +325,40 @@ export const categoryEdit = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const categoryDelete = async (req: admin, res: Response) => {
+  try {
+    const id = req.params.id;
+    const check = await Categories.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The category has not been existed!"
+      })
+      return;
+    }
+
+    await Categories.updateOne({
+      _id: id,
+      deleted: false
+    }, {
+      deleted: true,
+      deletedAt: Date.now(),
+      deletedBy: req.admin.id
+    })
+
+    res.json({
+      code: "success",
+      message: "The category has been deleted!"
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "CategoryId invalid!"
+    })
+  }
+}

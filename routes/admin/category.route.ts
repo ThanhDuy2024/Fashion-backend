@@ -19,4 +19,6 @@ route.patch('/edit/:id', upload.single('image'), validate.categoriesValidate, ca
 
 route.get('/tree', categoriesController.categoriesTree);
 
+route.delete('/delete/:id', categoriesController.categoryDelete);
+
 export default route;
