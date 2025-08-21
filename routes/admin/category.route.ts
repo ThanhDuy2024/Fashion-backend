@@ -25,4 +25,6 @@ route.get('/trash/list', categoriesController.categoryTrashList);
 
 route.patch('/trash/restore/:id', categoriesController.categoriesTrashRestore);
 
+route.delete('/trash/delete/:id', categoriesController.categoriesTrashDelete);
+
 export default route;

@@ -63,13 +63,13 @@ export const categoryCreate = async (req: admin, res: Response) => {
 }
 
 export const categoryList = async (req: admin, res: Response) => {
-  const find:any = {
+  const find: any = {
     deleted: false
   }
   const { search, status, startDate, endDate, page } = req.query;
 
   //search
-  if(search) {
+  if (search) {
     const keyword = slugify(String(search), {
       lower: true
     });
@@ -79,16 +79,16 @@ export const categoryList = async (req: admin, res: Response) => {
   //end search
 
   //status filter
-  if(status === "active" || status === "inactive") {
+  if (status === "active" || status === "inactive") {
     find.status = status;
   }
   //end status filter
 
   //days filter
-  if(startDate && endDate) {
+  if (startDate && endDate) {
     const startDateFormat = moment(String(startDate)).startOf("date").toDate();
     const endDateFormat = moment(String(endDate)).endOf('date').toDate();
-    const date:any = {
+    const date: any = {
       $gte: startDateFormat,
       $lte: endDateFormat,
     }
@@ -97,10 +97,10 @@ export const categoryList = async (req: admin, res: Response) => {
   //end days filter
 
   //pagination 
-  let pageNumber:any = 1;
-  if(page) {
+  let pageNumber: any = 1;
+  if (page) {
     pageNumber = page;
-  } 
+  }
   const countDocuments = await Categories.countDocuments(find);
 
   const paginationHelper = pagination(countDocuments, parseInt(pageNumber))
@@ -110,11 +110,11 @@ export const categoryList = async (req: admin, res: Response) => {
     .sort({
       position: "desc"
     });
-  
-  const data:any = []
-  
+
+  const data: any = []
+
   for (const item of record) {
-    const rawData:any = {
+    const rawData: any = {
       id: item.id,
       name: item.name,
       image: item.image ? item.image : "",
@@ -139,17 +139,17 @@ export const categoryList = async (req: admin, res: Response) => {
 }
 
 export const categoriesTree = async (req: admin, res: Response) => {
-  const find:any = {
+  const find: any = {
     deleted: false
   }
   //end search
 
   const record = await Categories.find(find)
-  
-  const data:any = []
-  
+
+  const data: any = []
+
   for (const item of record) {
-    const rawData:any = {
+    const rawData: any = {
       id: item.id,
       name: item.name,
       image: item.image ? item.image : "",
@@ -165,7 +165,7 @@ export const categoriesTree = async (req: admin, res: Response) => {
         deleted: false
       })
 
-      if(check) {
+      if (check) {
         rawData.parentCategoryId.push(check.id);
       }
     }
@@ -192,14 +192,14 @@ export const categoryDetail = async (req: admin, res: Response) => {
       deleted: false,
     });
 
-    if(!category) {
+    if (!category) {
       res.status(404).json({
         code: "error",
         message: "The category is not found!"
       });
       return;
     }
-    const dataFinal:any = {
+    const dataFinal: any = {
       id: category.id,
       name: category.name,
       parentCategoryId: [],
@@ -212,16 +212,16 @@ export const categoryDetail = async (req: admin, res: Response) => {
       updatedByFormat: "",
     }
 
-     for (const item of category.parentCategoryId) {
+    for (const item of category.parentCategoryId) {
       const check = await Categories.findOne({
         _id: item,
         deleted: false
       });
 
-      if(check) {
+      if (check) {
         dataFinal.parentCategoryId.push(item);
       }
-     }
+    }
 
     dataFinal.createdAtFormat = moment(category.createdAt).format("HH:mm DD/MM/YYYY");
     dataFinal.updatedAtFormat = moment(category.updatedAt).format("HH:mm DD/MM/YYYY");
@@ -231,7 +231,7 @@ export const categoryDetail = async (req: admin, res: Response) => {
       deleted: false,
     })
 
-    if(createdByName) {
+    if (createdByName) {
       dataFinal.createdByFormat = createdByName.fullName;
     }
 
@@ -240,7 +240,7 @@ export const categoryDetail = async (req: admin, res: Response) => {
       deleted: false,
     })
 
-    if(updateByName) {
+    if (updateByName) {
       dataFinal.updatedByFormat = updateByName.fullName;
     }
 
@@ -265,7 +265,7 @@ export const categoryEdit = async (req: admin, res: Response) => {
       deleted: false,
     });
 
-    if(!category) {
+    if (!category) {
       res.status(404).json({
         code: "error",
         message: "The category has not been existed!"
@@ -273,19 +273,19 @@ export const categoryEdit = async (req: admin, res: Response) => {
       return;
     }
 
-    if(req.file) {
+    if (req.file) {
       req.body.image = req.file.path;
     } else {
       delete req.body.image;
     }
 
-    if(req.body.position) {
+    if (req.body.position) {
       req.body.position = parseInt(req.body.position);
     } else {
       req.body.position = await Categories.countDocuments() + 1;
     }
 
-    if(req.body.parentCategoryId.length === 0) {
+    if (req.body.parentCategoryId.length === 0) {
       req.body.parentCategoryId = [];
     } else {
       req.body.parentCategoryId = JSON.parse(req.body.parentCategoryId);
@@ -297,8 +297,8 @@ export const categoryEdit = async (req: admin, res: Response) => {
           _id: item,
           deleted: false
         })
-        
-        if(!check) {
+
+        if (!check) {
           res.status(404).json({
             code: "error",
             message: "Some categoryId not existed!"
@@ -334,7 +334,7 @@ export const categoryDelete = async (req: admin, res: Response) => {
       deleted: false
     });
 
-    if(!check) {
+    if (!check) {
       res.status(404).json({
         code: "error",
         message: "The category has not been existed!"
@@ -364,13 +364,13 @@ export const categoryDelete = async (req: admin, res: Response) => {
 }
 
 export const categoryTrashList = async (req: admin, res: Response) => {
-  const find:any = {
+  const find: any = {
     deleted: true
   }
   const { search, startDate, endDate, page } = req.query;
 
   //search
-  if(search) {
+  if (search) {
     const keyword = slugify(String(search), {
       lower: true
     });
@@ -380,10 +380,10 @@ export const categoryTrashList = async (req: admin, res: Response) => {
   //end search
 
   //days filter
-  if(startDate && endDate) {
+  if (startDate && endDate) {
     const startDateFormat = moment(String(startDate)).startOf("date").toDate();
     const endDateFormat = moment(String(endDate)).endOf('date').toDate();
-    const date:any = {
+    const date: any = {
       $gte: startDateFormat,
       $lte: endDateFormat,
     }
@@ -392,10 +392,10 @@ export const categoryTrashList = async (req: admin, res: Response) => {
   //end days filter
 
   //pagination 
-  let pageNumber:any = 1;
-  if(page) {
+  let pageNumber: any = 1;
+  if (page) {
     pageNumber = page;
-  } 
+  }
   const countDocuments = await Categories.countDocuments(find);
 
   const paginationHelper = pagination(countDocuments, parseInt(pageNumber))
@@ -405,11 +405,11 @@ export const categoryTrashList = async (req: admin, res: Response) => {
     .sort({
       deletedAt: "desc"
     });
-  
-  const data:any = []
-  
+
+  const data: any = []
+
   for (const item of record) {
-    const rawData:any = {
+    const rawData: any = {
       id: item.id,
       name: item.name,
       image: item.image ? item.image : "",
@@ -419,13 +419,13 @@ export const categoryTrashList = async (req: admin, res: Response) => {
     }
 
     rawData.deletedAtFormat = moment(item.deletedAt).format("HH:mm DD/MM/YYYY");
-    
+
     const check = await AccountAdmin.findOne({
       _id: item.deletedBy,
       deleted: false
     })
 
-    if(check) {
+    if (check) {
       rawData.deletedByFormat = check.fullName;
     }
 
@@ -449,7 +449,7 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
       deleted: true
     });
 
-    if(!check) {
+    if (!check) {
       res.status(404).json({
         code: "error",
         message: "The category has not been existed!"
@@ -472,6 +472,56 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
     res.status(400).json({
       code: "error",
       message: "Invalid categoryId!"
+    })
+  }
+}
+
+export const categoriesTrashDelete = async (req: admin, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    const check = await Categories.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if (!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The category has not been existed!"
+      })
+      return;
+    }
+
+    const category = await Categories.find({
+      parentCategoryId: id
+    });
+
+    if (category) {
+      for (const item of category) {
+        const newParentId = item.parentCategoryId.filter(parentId => parentId !== id);
+        await Categories.updateOne({
+          _id: item.id
+        }, {
+          parentCategoryId: newParentId,
+          updatedBy: req.admin.id
+        })
+      }
+    }
+
+    await Categories.deleteOne({
+      _id: check.id,
+      deleted: true
+    })
+
+    res.json({
+      code: "success",
+      message: "The category has been deleted!"
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "Invalid categoryId"
     })
   }
 }
