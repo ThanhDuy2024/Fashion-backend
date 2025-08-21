@@ -21,4 +21,6 @@ route.get('/tree', categoriesController.categoriesTree);
 
 route.delete('/delete/:id', categoriesController.categoryDelete);
 
+route.get('/trash/list', categoriesController.categoryTrashList);
+
 export default route;

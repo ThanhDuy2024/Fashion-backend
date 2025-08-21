@@ -1,4 +1,4 @@
-import { Response } from "express"
+import { raw, Response } from "express"
 import { admin } from "../../interface/admin.interface"
 import { Categories } from "../../models/categories.model";
 import moment from "moment";
@@ -361,4 +361,82 @@ export const categoryDelete = async (req: admin, res: Response) => {
       message: "CategoryId invalid!"
     })
   }
+}
+
+export const categoryTrashList = async (req: admin, res: Response) => {
+  const find:any = {
+    deleted: true
+  }
+  const { search, startDate, endDate, page } = req.query;
+
+  //search
+  if(search) {
+    const keyword = slugify(String(search), {
+      lower: true
+    });
+    const regex = new RegExp(keyword);
+    find.slug = regex;
+  }
+  //end search
+
+  //days filter
+  if(startDate && endDate) {
+    const startDateFormat = moment(String(startDate)).startOf("date").toDate();
+    const endDateFormat = moment(String(endDate)).endOf('date').toDate();
+    const date:any = {
+      $gte: startDateFormat,
+      $lte: endDateFormat,
+    }
+    find.deletedAt = date;
+  }
+  //end days filter
+
+  //pagination 
+  let pageNumber:any = 1;
+  if(page) {
+    pageNumber = page;
+  } 
+  const countDocuments = await Categories.countDocuments(find);
+
+  const paginationHelper = pagination(countDocuments, parseInt(pageNumber))
+  //end pagination
+
+  const record = await Categories.find(find).limit(paginationHelper.limit).skip(paginationHelper.skip)
+    .sort({
+      deletedAt: "desc"
+    });
+  
+  const data:any = []
+  
+  for (const item of record) {
+    const rawData:any = {
+      id: item.id,
+      name: item.name,
+      image: item.image ? item.image : "",
+      status: item.status,
+      deletedAtFormat: "",
+      deletedByFormat: ""
+    }
+
+    rawData.deletedAtFormat = moment(item.deletedAt).format("HH:mm DD/MM/YYYY");
+    
+    const check = await AccountAdmin.findOne({
+      _id: item.deletedBy,
+      deleted: false
+    })
+
+    if(check) {
+      rawData.deletedByFormat = check.fullName;
+    }
+
+    data.push(rawData);
+  }
+
+  //const dataFinal = categoryTree(data);
+
+  res.json({
+    code: "success",
+    data: data,
+    totalPage: paginationHelper.totalPage
+  })
 }
