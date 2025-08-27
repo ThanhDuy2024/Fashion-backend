@@ -60,7 +60,6 @@ export const loginValidate = (req: Request, res: Response, next: NextFunction) =
   next();
 }
 
-
 export const profileValidate = (req: Request, res: Response, next: NextFunction) => {
   const schema = Joi.object({
     fullName: Joi.string().min(5).max(50).required()
