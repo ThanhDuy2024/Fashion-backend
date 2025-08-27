@@ -6,7 +6,7 @@ import categoryTree from "../../helpers/category.helper";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import slugify from "slugify";
 import { pagination } from "../../helpers/pagination.helper";
-
+import { categoryPermission } from "../../enums/categoryPermission";
 export const categoryCreate = async (req: admin, res: Response) => {
   try {
     if (req.file) {

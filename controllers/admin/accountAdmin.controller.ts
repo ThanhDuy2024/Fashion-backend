@@ -92,7 +92,8 @@ export const profile = async (req: admin, res: Response) => {
     image: req.admin.image ? req.admin.image : "",
     phone: req.admin.phone ? req.admin.phone : "",
     address: req.admin.address ? req.admin.address : "",
-    roleName: "Quay lai lam sau khi co collection role",
+    roleName: req.admin.roleName,
+    permission: req.admin.permission,
     status: req.admin.status,
   }
 
