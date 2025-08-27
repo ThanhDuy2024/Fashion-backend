@@ -34,6 +34,9 @@ export const roleCreate = async (req: admin, res: Response) => {
     return;
   }
 
+  req.body.createdBy = req.admin.id;
+  req.body.updatedBy = req.admin.id;
+
   const newRole = new Role(req.body);
 
   await newRole.save();
