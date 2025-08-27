@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import bcrypt from "bcryptjs";
-import jwt, { JwtHeader, JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { admin } from "../../interface/admin.interface";
 
 export const register = async (req: Request, res: Response) => {
@@ -9,7 +9,7 @@ export const register = async (req: Request, res: Response) => {
     email: req.body.email,
   });
 
-  if(check) {
+  if (check) {
     res.status(400).json({
       code: "error",
       message: "Your email has been registered!"
@@ -21,10 +21,10 @@ export const register = async (req: Request, res: Response) => {
   const hash = bcrypt.hashSync(String(req.body.password), salt);
 
   req.body.password = hash;
-  
+
   const newAccount = new AccountAdmin(req.body);
   await newAccount.save();
-  
+
   res.json({
     code: "success",
     message: "Your account has been registered!"
@@ -32,7 +32,7 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-  const {email, password} = req.body;
+  const { email, password } = req.body;
 
   const check = await AccountAdmin.findOne({
     email: email,
@@ -40,7 +40,7 @@ export const login = async (req: Request, res: Response) => {
     status: "active"
   });
 
-  if(!check) {
+  if (!check) {
     res.status(404).json({
       code: "error",
       message: "your email has not been registered!"
@@ -50,7 +50,7 @@ export const login = async (req: Request, res: Response) => {
 
   const hash = bcrypt.compareSync(String(password), String(check.password));
 
-  if(!hash) {
+  if (!hash) {
     res.status(404).json({
       code: "error",
       message: "Your password incorrect!"
@@ -103,11 +103,58 @@ export const profile = async (req: admin, res: Response) => {
   })
 }
 
+export const profileEdit = async (req: admin, res: Response) => {
+  try {
+    const { email, status } = req.body;
+    if(status !== "active" && status !== "inactive") {
+      res.status(400).json({
+        code: "error",
+        message: "your status is incorrect!"
+      });
+      return;
+    }
+
+    if(req.file) {
+      req.body.image = req.file.path;
+    } else {
+      delete req.body.image;
+    }
+
+
+    const check = await AccountAdmin.findOne({
+      _id: { $ne: req.admin.id},
+      email: email
+    })
+
+    if(check) {
+      return res.status(400).json({
+        code: "error",
+        message: "Your new email are existed!"
+      });
+    }
+
+    req.body.updatedBy = req.admin.id;
+
+    await AccountAdmin.updateOne({
+      _id: req.admin.id,
+    }, req.body);
+
+    res.json({
+      code: "success",
+      message: "your profile have been edited!"
+    })
+  } catch (error) {
+    res.json({
+      code: "error",
+    })
+  }
+}
+
 export const refresh = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    
-    if(!refreshToken) {
+
+    if (!refreshToken) {
       res.status(404).json({
         code: "error",
         message: "Your token is expired!"
@@ -123,7 +170,7 @@ export const refresh = async (req: Request, res: Response) => {
       status: "active"
     });
 
-    if(!check) {
+    if (!check) {
       res.clearCookie("refreshToken", refreshToken);
       res.status(404).json({
         code: "error",

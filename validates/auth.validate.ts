@@ -59,3 +59,39 @@ export const loginValidate = (req: Request, res: Response, next: NextFunction) =
   }
   next();
 }
+
+
+export const profileValidate = (req: Request, res: Response, next: NextFunction) => {
+  const schema = Joi.object({
+    fullName: Joi.string().min(5).max(50).required()
+      .messages({
+        "string.empty": "Your name is blank!",
+        "string.min": "Your name must be at least 5 character long!",
+        "string.max": "Your name is limited to 50 characters only"
+      }),
+    email: Joi.string().email().required()
+      .messages({
+        "string.empty": "Your email is blank!",
+        "string.email": "Your email is broken!"
+      }),
+    address: Joi.string().allow(""),
+    phone: Joi.string().allow(""),
+    image: Joi.string().allow(""),
+    roleId: Joi.string().allow(""),
+    status: Joi.string().required()
+      .messages({
+        "string.empty": "your account status are blank!"
+      })
+  })
+
+  const { error } = schema.validate(req.body);
+
+  if(error) {
+    res.status(400).json({
+      code: "error",
+      message: error.details[0].message
+    });
+    return;
+  }
+  next();
+}
