@@ -8,6 +8,13 @@ import slugify from "slugify";
 import { pagination } from "../../helpers/pagination.helper";
 import { categoryPermission } from "../../enums/categoryPermission";
 export const categoryCreate = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.create)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   try {
     if (req.file) {
       req.body.image = req.file.path;
@@ -63,6 +70,13 @@ export const categoryCreate = async (req: admin, res: Response) => {
 }
 
 export const categoryList = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.list)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   const find: any = {
     deleted: false
   }
@@ -139,6 +153,7 @@ export const categoryList = async (req: admin, res: Response) => {
 }
 
 export const categoriesTree = async (req: admin, res: Response) => {
+
   const find: any = {
     deleted: false
   }
@@ -185,6 +200,13 @@ export const categoriesTree = async (req: admin, res: Response) => {
 }
 
 export const categoryDetail = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.detail)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   try {
     const id = req.params.id;
     const category = await Categories.findOne({
@@ -257,6 +279,13 @@ export const categoryDetail = async (req: admin, res: Response) => {
 }
 
 export const categoryEdit = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.edit)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   try {
     const id = req.params.id;
 
@@ -327,6 +356,13 @@ export const categoryEdit = async (req: admin, res: Response) => {
 }
 
 export const categoryDelete = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.delete)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   try {
     const id = req.params.id;
     const check = await Categories.findOne({
@@ -364,6 +400,13 @@ export const categoryDelete = async (req: admin, res: Response) => {
 }
 
 export const categoryTrashList = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.trashList)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   const find: any = {
     deleted: true
   }
@@ -442,6 +485,13 @@ export const categoryTrashList = async (req: admin, res: Response) => {
 }
 
 export const categoriesTrashRestore = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.trashRestore)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   try {
     const id = req.params.id;
     const check = await Categories.findOne({
@@ -477,6 +527,13 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
 }
 
 export const categoriesTrashDelete = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(categoryPermission.trashDelete)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account is not permitted in this feature!"
+    });
+  }
   try {
     const id = req.params.id;
 
