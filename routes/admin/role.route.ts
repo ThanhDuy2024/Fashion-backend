@@ -7,4 +7,5 @@ route.post('/create', validate.roleValidate, roleController.roleCreate);
 
 route.get('/list', roleController.roleList);
 
+route.get('/detail/:id', roleController.roleDetail);
 export default route;

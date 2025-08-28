@@ -1,4 +1,4 @@
-import { raw, Response } from "express";
+import { Response } from "express";
 import { admin } from "../../interface/admin.interface";
 import { Role } from "../../models/role.model";
 import { categoryPermission } from "../../enums/categoryPermission";
@@ -131,4 +131,64 @@ export const roleList = async (req: admin, res: Response) => {
     data: finalData,
     totalPage: pagination.totalPage
   })
+}
+
+export const roleDetail = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const role = await Role.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!role) {
+      return res.status(404).json({
+        code: "error",
+        message: "The item is not found!"
+      });
+    }
+
+    const finalData:any = {
+      id: role.id,
+      name: role.name,
+      permission: role.permission,
+      createdByFormat: "",
+      updatedByFormat: "",
+    }
+
+    finalData.createdAtFormat = moment(role.createdAt).format("HH:mm DD/MM/YYYY");
+    finalData.updatedAtFormat = moment(role.updatedAt).format("HH:mm DD/MM/YYYY");
+
+    if(role.createdBy) {
+      const account = await AccountAdmin.findOne({
+        _id: role.createdBy,
+        deleted: false
+      });
+
+      if(account) {
+        finalData.createdByFormat = account.fullName;
+      }
+    }
+
+    if(role.updatedBy) {
+      const account = await AccountAdmin.findOne({
+        _id: role.updatedBy,
+        deleted: false
+      });
+
+      if(account) {
+        finalData.updatedByFormat = account.fullName;
+      }
+    }
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "The item is not found!"
+    })
+  }
 }
