@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { admin } from "../../interface/admin.interface";
 import { Role } from "../../models/role.model";
-import { categoryPermission } from "../../enums/categoryPermission";
+import { rolePermission } from "../../enums/permission";
 import moment from "moment";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import * as paginationFeature from "../../helpers/pagination.helper";
@@ -22,7 +22,7 @@ export const roleCreate = async (req: admin, res: Response) => {
     return;
   }
 
-  const permissionArray = Object.values(categoryPermission);
+  const permissionArray = Object.values(rolePermission);
 
   let ok;
   permission.forEach((item:any) => {
@@ -189,6 +189,56 @@ export const roleDetail = async (req: admin, res: Response) => {
     res.status(404).json({
       code: "error",
       message: "The item is not found!"
+    })
+  }
+}
+
+export const roleEdit = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { permission } = req.body;
+
+    const role = await Role.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!role) {
+      return res.json({
+        code: "error",
+        message: "The role is not found!"
+      });
+    }
+
+    const permissionArray = Object.values(rolePermission);
+
+    for (const item of permission) {
+      const check = permissionArray.includes(item);
+
+      if(!check) {
+        res.status(404).json({
+          code: "error",
+          message: `The ${item} is not found in data!`
+        });
+        return;
+      }
+    }
+
+    req.body.updatedBy = req.admin.id;
+
+    await Role.updateOne({
+      _id: id,
+      deleted: false
+    }, req.body);
+
+    res.json({
+      code: "success",
+      message: "The role has been edited!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "The role is not found!"
     })
   }
 }

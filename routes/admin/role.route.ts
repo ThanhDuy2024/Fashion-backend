@@ -8,4 +8,6 @@ route.post('/create', validate.roleValidate, roleController.roleCreate);
 route.get('/list', roleController.roleList);
 
 route.get('/detail/:id', roleController.roleDetail);
+
+route.patch('/edit/:id', roleController.roleEdit);
 export default route;

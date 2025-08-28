@@ -6,10 +6,10 @@ import categoryTree from "../../helpers/category.helper";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import slugify from "slugify";
 import { pagination } from "../../helpers/pagination.helper";
-import { categoryPermission } from "../../enums/categoryPermission";
+import { rolePermission } from "../../enums/permission";
 export const categoryCreate = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.create)) {
+  if(!permission.includes(rolePermission.create)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -71,7 +71,7 @@ export const categoryCreate = async (req: admin, res: Response) => {
 
 export const categoryList = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.list)) {
+  if(!permission.includes(rolePermission.list)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -201,7 +201,7 @@ export const categoriesTree = async (req: admin, res: Response) => {
 
 export const categoryDetail = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.detail)) {
+  if(!permission.includes(rolePermission.detail)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -280,7 +280,7 @@ export const categoryDetail = async (req: admin, res: Response) => {
 
 export const categoryEdit = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.edit)) {
+  if(!permission.includes(rolePermission.edit)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -357,7 +357,7 @@ export const categoryEdit = async (req: admin, res: Response) => {
 
 export const categoryDelete = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.delete)) {
+  if(!permission.includes(rolePermission.delete)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -401,7 +401,7 @@ export const categoryDelete = async (req: admin, res: Response) => {
 
 export const categoryTrashList = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.trashList)) {
+  if(!permission.includes(rolePermission.trashList)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -486,7 +486,7 @@ export const categoryTrashList = async (req: admin, res: Response) => {
 
 export const categoriesTrashRestore = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.trashRestore)) {
+  if(!permission.includes(rolePermission.trashRestore)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -528,7 +528,7 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
 
 export const categoriesTrashDelete = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(categoryPermission.trashDelete)) {
+  if(!permission.includes(rolePermission.trashDelete)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
