@@ -5,4 +5,6 @@ const route = Router();
 
 route.post('/create', validate.roleValidate, roleController.roleCreate);
 
+route.get('/list', roleController.roleList);
+
 export default route;
