@@ -69,14 +69,14 @@ export const login = async (req: Request, res: Response) => {
     fullName: check.fullName,
     email: check.email
   }, String(process.env.JWT_REFRESH_TOKEN), {
-    expiresIn: 30 * 24 * 60 * 60 * 1000
+    expiresIn: "30d"
   })
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000,
-    secure: true,
-    sameSite: "none"
+    secure: false,
+    sameSite: "lax"
   })
   res.json({
     code: "success",
