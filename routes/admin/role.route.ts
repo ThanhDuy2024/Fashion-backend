@@ -10,4 +10,6 @@ route.get('/list', roleController.roleList);
 route.get('/detail/:id', roleController.roleDetail);
 
 route.patch('/edit/:id', roleController.roleEdit);
+
+route.delete('/delete/:id', roleController.roleDelete);
 export default route;
