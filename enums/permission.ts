@@ -15,5 +15,9 @@ export enum rolePermission {
   roleList = "role-list",
   roleDetail = "role-detail",
   roleEdit = "role-edit",
+  roleDelete = "role-delete",
+  roleTrashList = "role-trash-list",
+  roleTrashRestore = "role-trash-restore",
+  roleTrashDelete = "role-trash-delete"
   //end role
 }

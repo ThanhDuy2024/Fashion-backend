@@ -9,6 +9,13 @@ import slugify from "slugify";
 import { softDelete } from "../../enums/softDeleteString";
 
 export const roleCreate = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleCreate)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
   const { name, permission } = req.body;
 
   const check = await Role.findOne({
@@ -54,6 +61,13 @@ export const roleCreate = async (req: admin, res: Response) => {
 }
 
 export const roleList = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleList)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
   const find:any = {
     deleted: false
   }
@@ -135,6 +149,14 @@ export const roleList = async (req: admin, res: Response) => {
 }
 
 export const roleDetail = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleDetail)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
+
   try {
     const { id } = req.params;
 
@@ -195,6 +217,14 @@ export const roleDetail = async (req: admin, res: Response) => {
 }
 
 export const roleEdit = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleEdit)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
+
   try {
     const { id } = req.params;
     const { permission } = req.body;
@@ -245,6 +275,13 @@ export const roleEdit = async (req: admin, res: Response) => {
 }
 
 export const roleDelete = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleDelete)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
   try {
     const { id } = req.params;
 
@@ -295,6 +332,13 @@ export const roleDelete = async (req: admin, res: Response) => {
 }
 
 export const roleTrashList = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleTrashList)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
   const find:any = {
     deleted: true
   }
@@ -356,6 +400,13 @@ export const roleTrashList = async (req: admin, res: Response) => {
 }
 
 export const roleTrashRestore = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleTrashRestore)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
   try {
     const { id } = req.params;
     const check = await Role.findOne({
@@ -407,6 +458,13 @@ export const roleTrashRestore = async (req: admin, res: Response) => {
 }
 
 export const roleTrashDelete = async (req: admin, res: Response) => {
+  if(!req.admin.permission.includes(rolePermission.roleDelete)) {
+    res.json({
+      code: "error",
+      message: "Account is not to permiited in this feature!"
+    });
+    return;
+  }
   try {
     const { id } = req.params;
 
