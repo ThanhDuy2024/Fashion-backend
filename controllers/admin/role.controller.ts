@@ -1,4 +1,4 @@
-import { raw, Response } from "express";
+import { Response } from "express";
 import { admin } from "../../interface/admin.interface";
 import { Role } from "../../models/role.model";
 import { rolePermission } from "../../enums/permission";
@@ -6,6 +6,7 @@ import moment from "moment";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import * as paginationFeature from "../../helpers/pagination.helper";
 import slugify from "slugify";
+import { softDelete } from "../../enums/softDeleteString";
 
 export const roleCreate = async (req: admin, res: Response) => {
   const { name, permission } = req.body;
@@ -267,7 +268,7 @@ export const roleDelete = async (req: admin, res: Response) => {
       await AccountAdmin.updateOne({
         _id: item.id
       }, {
-        roleId: id + " softDelete"
+        roleId: id + softDelete.softDelete
       })
     }
 
@@ -371,7 +372,7 @@ export const roleaTrashRestore = async (req: admin, res: Response) => {
     }
 
     const account = await AccountAdmin.find({
-      roleId: id + " softDelete",
+      roleId: id + softDelete.softDelete,
     });
 
     console.log(account);
