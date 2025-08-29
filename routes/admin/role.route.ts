@@ -14,4 +14,6 @@ route.patch('/edit/:id', roleController.roleEdit);
 route.delete('/delete/:id', roleController.roleDelete);
 
 route.get('/trash/list', roleController.roleTrashList);
+
+route.patch('/trash/restore/:id', roleController.roleaTrashRestore)
 export default route;

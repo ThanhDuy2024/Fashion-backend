@@ -259,6 +259,19 @@ export const roleDelete = async (req: admin, res: Response) => {
       })
     }
 
+    const account = await AccountAdmin.find({
+      roleId: id,
+    })
+
+    for (const item of account) {
+      await AccountAdmin.updateOne({
+        _id: item.id
+      }, {
+        roleId: id + " softDelete"
+      })
+    }
+
+
     await Role.updateOne({
       _id: id,
       deleted: false
@@ -339,4 +352,55 @@ export const roleTrashList = async (req: admin, res: Response) => {
     data: finalData,
     totalPage: pagination.totalPage
   })
+}
+
+export const roleaTrashRestore = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const check = await Role.findOne({
+      _id: id,
+      deleted: true
+    })
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The role is not found!"
+      })
+      return;
+    }
+
+    const account = await AccountAdmin.find({
+      roleId: id + " softDelete",
+    });
+
+    console.log(account);
+
+    for (const item of account) {
+      await AccountAdmin.updateOne({
+        _id: item.id
+      }, {
+        roleId: id,
+      })
+    }
+
+    await Role.updateOne({
+      _id: id,
+      deleted: true
+    }, {
+      deleted: false,
+      updatedBy: req.admin.id
+    })
+    res.json({
+      code: "success",
+      message: "The role has been restored!"
+    })
+  
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: "The role is not found!"
+    })
+  }
 }
