@@ -355,7 +355,7 @@ export const roleTrashList = async (req: admin, res: Response) => {
   })
 }
 
-export const roleaTrashRestore = async (req: admin, res: Response) => {
+export const roleTrashRestore = async (req: admin, res: Response) => {
   try {
     const { id } = req.params;
     const check = await Role.findOne({
@@ -402,6 +402,53 @@ export const roleaTrashRestore = async (req: admin, res: Response) => {
     res.status(400).json({
       code: "error",
       message: "The role is not found!"
+    })
+  }
+}
+
+export const roleTrashDelete = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await Role.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The role is not found!"
+      });
+      return;
+    }
+
+    const account = await AccountAdmin.find({
+      roleId: id + softDelete.softDelete,
+    })
+
+    if(account) {
+      for (const item of account) {
+        await AccountAdmin.updateOne({
+          _id: item.id
+        }, {
+          roleId: ""
+        })
+      }
+    }
+
+    await Role.deleteOne({
+      _id: id,
+      deleted: true
+    })
+    res.json({
+      code: "success",
+      message: "The role has been deleted!"
+    });
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: error
     })
   }
 }
