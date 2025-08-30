@@ -149,3 +149,59 @@ export const styleDetail = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const styleEdit = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    if(req.body.status !== "active" && req.body.status !== "inactive") {
+      res.status(400).json({
+        code: "error",
+        message: "The style status incorrected!"
+      })
+      return;
+    }
+    
+    const check = await Style.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The style is not found!"
+      });
+      return;
+    }
+
+    const checkName = await Style.findOne({
+      _id: { $ne: check.id},
+      name: req.body.name
+    })
+
+    if(checkName) {
+      res.status(400).json({
+        code: "error",
+        message: "The style name has been existed in your style"
+      });
+      return;
+    }
+
+    req.body.updatedBy = req.admin.id;
+
+    await Style.updateOne({
+      _id: check.id,
+    }, req.body);
+
+    res.json({
+      code: "success",
+      message: "The style has been edited!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "The style is not found!"
+    })
+  }
+}
