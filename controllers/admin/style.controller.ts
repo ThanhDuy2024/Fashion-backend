@@ -73,6 +73,7 @@ export const styleList = async (req: admin, res: Response) => {
 
   for (const item of record) {
     const rawData: any = {
+      id: item.id,
       name: item.name,
       status: item.status,
       createdByFormat: "",
@@ -112,4 +113,39 @@ export const styleList = async (req: admin, res: Response) => {
     data: finalData,
     totalPage: pagination.totalPage,
   })
+}
+
+export const styleDetail = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    const check = await Style.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The style is not found!"
+      });
+      return;
+    }
+
+    const finalData:any = {
+      _id: check.id,
+      name: check.name,
+      status: check.status,
+    }
+
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "The style is not found!"
+    })
+  }
 }

@@ -7,4 +7,5 @@ route.post('/create', styleValidate.styleValidate, styleController.styleCreate);
 
 route.get("/list", styleController.styleList);
 
+route.get("/detail/:id", styleController.styleDetail);
 export default route;
