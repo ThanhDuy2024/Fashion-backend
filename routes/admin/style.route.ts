@@ -5,4 +5,6 @@ const route = Router();
 
 route.post('/create', styleValidate.styleValidate, styleController.styleCreate);
 
+route.get("/list", styleController.styleList);
+
 export default route;
