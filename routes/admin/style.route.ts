@@ -16,4 +16,6 @@ route.delete('/delete/:id', styleController.styleDelete);
 route.get('/trash/list', styleController.styleTrashList);
 
 route.patch('/trash/restore/:id', styleController.styleTrashRestore);
+
+route.delete('/trash/delete/:id', styleController.styleTrashDelete);
 export default route;

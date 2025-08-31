@@ -343,3 +343,37 @@ export const styleTrashRestore = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const styleTrashDelete = async (req: admin, res: Response) => {
+  try {
+    const id = req.params.id;
+
+    const check = await Style.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if (!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The style has not been existed!"
+      })
+      return;
+    }
+
+    await Style.deleteOne({
+      _id: check.id,
+      deleted: true
+    })
+
+    res.json({
+      code: "success",
+      message: "The style has been deleted!"
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: "Invalid styleId"
+    })
+  }
+}
