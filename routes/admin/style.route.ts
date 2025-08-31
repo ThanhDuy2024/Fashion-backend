@@ -14,4 +14,6 @@ route.patch("/edit/:id", styleValidate.styleEditValidate, styleController.styleE
 route.delete('/delete/:id', styleController.styleDelete);
 
 route.get('/trash/list', styleController.styleTrashList);
+
+route.patch('/trash/restore/:id', styleController.styleTrashRestore);
 export default route;

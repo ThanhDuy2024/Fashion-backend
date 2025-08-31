@@ -306,3 +306,40 @@ export const styleTrashList = async (req: admin, res: Response) => {
     totalPage: pagination.totalPage
   })
 }
+
+export const styleTrashRestore = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const check = await Style.findOne({
+      _id: id,
+      deleted: true
+    })
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The style is not found!"
+      })
+      return;
+    }
+
+    await Style.updateOne({
+      _id: id,
+      deleted: true
+    }, {
+      deleted: false,
+      updatedBy: req.admin.id
+    })
+    res.json({
+      code: "success",
+      message: "The style has been restored!"
+    })
+  
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: "The style is not found!"
+    })
+  }
+}
