@@ -241,3 +241,68 @@ export const styleDelete = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const styleTrashList = async (req: admin, res: Response) => {
+  const find:any = {
+    deleted: true
+  }
+
+  const { search, status, page } = req.query;
+  //search 
+  if(search) {
+    const keyword = slugify(String(search), {
+      lower:true
+    });
+
+    const regex = new RegExp(keyword);
+    find.slug = regex;
+  }
+  //end search
+
+  //status fillter
+  if(status == "active" || status == "inactive") {
+    find.status = status;
+  }
+  //end status fillter
+
+  //pagination
+  let pageNumber:number = 1
+  if(page) {
+    pageNumber = parseInt(String(page));
+  }
+  const countDocuments = await Style.countDocuments(find);
+  const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+  //end pagination
+
+  const style = await Style.find(find).sort({
+    deletedAt: "desc"
+  }).limit(pagination.limit).skip(pagination.skip);
+
+  const finalData:any = [];
+
+  for (const item of style) {
+    const rawData:any = {
+      id: item.id,
+      name: item.name,
+      deletedByFormat: "",
+    }
+
+    rawData.deletedAtFormat = moment(item.deletedAt).format("HH:mm DD/MM/YYYY");
+
+    if(item.deletedAt) {
+      const account = await AccountAdmin.findOne({
+        _id: item.deletedBy,
+        deleted: false
+      });
+      if(account) {
+        rawData.deletedByFormat = account.fullName;
+      }
+    }
+    finalData.push(rawData);
+  }
+  res.json({
+    code: "success",
+    data: finalData,
+    totalPage: pagination.totalPage
+  })
+}
