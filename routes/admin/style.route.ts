@@ -10,4 +10,6 @@ route.get("/list", styleController.styleList);
 route.get("/detail/:id", styleController.styleDetail);
 
 route.patch("/edit/:id", styleValidate.styleEditValidate, styleController.styleEdit);
+
+route.delete('/delete/:id', styleController.styleDelete);
 export default route;

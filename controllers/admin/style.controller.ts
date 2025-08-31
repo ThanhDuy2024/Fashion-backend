@@ -205,3 +205,39 @@ export const styleEdit = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const styleDelete = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const check = await Style.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!check) {
+      res.status(404).json({
+        code: "error",
+        message: "The style is not found!"
+      });
+      return;
+    }
+
+    await Style.updateOne({
+      _id: id,
+    }, {
+      deleted: true,
+      deletedAt: Date.now(),
+      deletedBy: req.admin.id
+    });
+
+    res.json({
+      code: "success",
+      message: "The style has been deleted!"
+    });
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "The style is not found!"
+    })
+  }
+}
