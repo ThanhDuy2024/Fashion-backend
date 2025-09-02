@@ -3,9 +3,11 @@ import { admin } from "../../interface/admin.interface";
 import { Coupon } from "../../models/coupon.model";
 import moment from "moment";
 import { AccountAdmin } from "../../models/accountAdmin.model";
+import * as paginationFeature from "../../helpers/pagination.helper";
+import slugify from "slugify";
 
 export const create = async (req: admin, res: Response) => {
-  const { name, startDay, endDay } = req.body
+  const { name, startDay, endDay, status } = req.body
   const check = await Coupon.findOne({
     name: name,
   });
@@ -15,6 +17,13 @@ export const create = async (req: admin, res: Response) => {
       code: "error",
       message: "A coupon name has been existed!"
     });
+  }
+
+  if(status !== "active" && status !== "inactive") {
+    return res.status(400).json({
+      code: "error",
+      message: "Status must active or inactive!"
+    })
   }
 
   const start = moment(startDay, "YYYY-MM-DD");
@@ -39,9 +48,40 @@ export const create = async (req: admin, res: Response) => {
 
 export const list = async (req: admin, res: Response) => {
   const find: any = {};
+
+  const { search, page, status} = req.query;
+
+  //search
+  if(search) {
+    const keyword = slugify(String(search), {
+      lower: true
+    });
+
+    const regex = new RegExp(keyword);
+
+    find.slug = regex;
+  }
+  //end search
+
+  //status
+  if(status === "active" || status === "inactive") {
+    find.status = status;
+  }
+  //end status
+
+
+  //pagination
+  let pageNumber:number = 1;
+  if(page) {
+    pageNumber = parseInt(String(page));
+  }
+  const countDocuments = await Coupon.countDocuments(find);
+  const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+  //end pagination
+
   const record = await Coupon.find(find).sort({
     created: "desc",
-  })
+  }).limit(pagination.limit).skip(pagination.skip);
 
   const finalData: any = [];
   for (const item of record) {
@@ -81,7 +121,8 @@ export const list = async (req: admin, res: Response) => {
   }
   res.json({
     code: "success",
-    data: finalData
+    data: finalData,
+    totalPage: pagination.totalPage
   })
 }
 

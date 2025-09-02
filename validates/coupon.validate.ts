@@ -21,6 +21,10 @@ export const couponValidate = async (req: Request, res: Response, next: NextFunc
       .messages({
         "date.empty": "End day is blank!",
         "date.greater": "End day is not greater than start day!"
+      }),
+    status: Joi.string().required()
+      .messages({
+        "string.empty": "Coupon status is blank!"
       })
   })
 
