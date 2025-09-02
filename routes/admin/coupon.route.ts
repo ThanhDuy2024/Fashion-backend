@@ -5,4 +5,5 @@ const route = Router();
 
 route.post('/create', couponValidate, couponController.create);
 
+route.get('/list', couponController.list);
 export default route;
