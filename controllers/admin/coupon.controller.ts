@@ -10,7 +10,7 @@ export const create = async (req: admin, res: Response) => {
     name: name,
   });
 
-  if(check) {
+  if (check) {
     return res.status(400).json({
       code: "error",
       message: "A coupon name has been existed!"
@@ -27,7 +27,7 @@ export const create = async (req: admin, res: Response) => {
   req.body.discount = parseInt(String(req.body.discount));
   req.body.createdBy = req.admin.id;
   req.body.updatedBy = req.admin.id;
-  req.body.expireAt = Date.now() + parseInt(String(totalDays)) * 24 * 60 * 60 * 1000; 
+  req.body.expireAt = Date.now() + parseInt(String(totalDays)) * 24 * 60 * 60 * 1000;
 
   await Coupon.create(req.body);
 
@@ -38,38 +38,38 @@ export const create = async (req: admin, res: Response) => {
 }
 
 export const list = async (req: admin, res: Response) => {
-  const find:any = {};
+  const find: any = {};
   const record = await Coupon.find(find).sort({
     created: "desc",
   })
 
-  const finalData:any = [];
+  const finalData: any = [];
   for (const item of record) {
-    const rawData:any = {
+    const rawData: any = {
       id: item.id,
       name: item.name,
       createdByFormat: "",
       updatedByFornat: "",
     }
 
-    if(item.createdBy) {
+    if (item.createdBy) {
       const check = await AccountAdmin.findOne({
         _id: item.createdBy,
         deleted: false
       });
 
-      if(check) {
+      if (check) {
         rawData.createdByFormat = check.fullName
       }
     }
 
-    if(item.updatedBy) {
+    if (item.updatedBy) {
       const check = await AccountAdmin.findOne({
         _id: item.updatedBy,
         deleted: false
       });
 
-      if(check) {
+      if (check) {
         rawData.updatedByFornat = check.fullName
       }
     }
@@ -83,4 +83,42 @@ export const list = async (req: admin, res: Response) => {
     code: "success",
     data: finalData
   })
+}
+
+export const detail = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const check = await Coupon.findOne({
+      _id: id
+    });
+
+    if (!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "The coupon is not found!"
+      })
+    }
+
+    const finalData:any = {
+      id: check.id,
+      name: check.name,
+      discount: String(check.discount) + "%",
+      startDateFormat: "",
+      endDateFormat: "",
+      status: check.status,
+    }
+
+    finalData.startDateFormat = moment(check.startDate).format("DD/MM/YYYY");
+    finalData.endDateFormat = moment(check.endDate).format("DD/MM/YYYY");
+
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "The coupon is not found!"
+    })
+  }
 }

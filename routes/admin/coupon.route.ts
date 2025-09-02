@@ -6,4 +6,6 @@ const route = Router();
 route.post('/create', couponValidate, couponController.create);
 
 route.get('/list', couponController.list);
+
+route.get('/detail/:id', couponController.detail);
 export default route;
