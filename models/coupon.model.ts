@@ -6,7 +6,8 @@ mongoose.plugin(slug);
 const schema = new Schema({
   name: String,
   discount: Number,
-  duration: Number,
+  startDate: Date,
+  endDate: Date,
   expireAt: {
     type: Date,
     expires: 0

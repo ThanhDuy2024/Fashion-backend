@@ -21,7 +21,8 @@ export const create = async (req: admin, res: Response) => {
 
   const totalDays = end.diff(start, "days");
 
-
+  req.body.startDate = new Date(String(start));
+  req.body.endDate = new Date(String(end));
   req.body.discount = parseInt(String(req.body.discount));
   req.body.createdBy = req.admin.id;
   req.body.expireAt = Date.now() + parseInt(String(totalDays)) * 24 * 60 * 60 * 1000; 
