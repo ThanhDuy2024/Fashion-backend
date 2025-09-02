@@ -5,7 +5,8 @@ export const styleValidate = async (req: Request, res: Response, next: NextFunct
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required()
       .messages({
-        "string.empty": "name is blank!",
+        "any.required": "Name is required!",
+        "string.empty": "Name is blank!",
         "string.min": "Name must be at least 3 character long",
         "string.max": "Name is limited to 50 characters only"
       })
@@ -27,6 +28,7 @@ export const styleEditValidate = async (req: Request, res: Response, next: NextF
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required()
       .messages({
+        "any.required": "Name is required!",
         "string.empty": "name is blank!",
         "string.min": "Name must be at least 3 character long",
         "string.max": "Name is limited to 50 characters only"

@@ -5,12 +5,14 @@ export const categoriesValidate = (req: Request, res: Response, next: NextFuncti
   const schema = Joi.object({
     name: Joi.string().min(5).max(50).required()
       .messages({
+        "any.required": "The category name is required!",
         "string.empty": "The category name is blank!",
         "string.min": "The category must be at least 5 character long!",
         "string.max": "The category is limited to 50 characters only"
       }),
     status: Joi.string().required()
       .messages({
+        "any.required": "The status is required!",
         "string.empty": "The status is blank!",
       }),
     image: Joi.string().allow(''),

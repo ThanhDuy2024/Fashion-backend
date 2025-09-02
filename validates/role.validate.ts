@@ -8,7 +8,8 @@ export const roleValidate = async (req: Request, res: Response, next: NextFuncti
       .messages({
         "string.empty": "Role name is blank!",
         "string.min": " The role must be at least 3 character long!", 
-        "string.max": "The role is limited to 50 characters only!"
+        "string.max": "The role is limited to 50 characters only!",
+        "any.required": "The role name is required!"
       }),
     permission: Joi.allow()
   })
