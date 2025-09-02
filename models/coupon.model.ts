@@ -6,7 +6,11 @@ mongoose.plugin(slug);
 const schema = new Schema({
   name: String,
   discount: Number,
-  expireAt: Date,
+  duration: Number,
+  expireAt: {
+    type: Date,
+    expires: 0
+  },
   status: {
     type: String,
     default: "active"
