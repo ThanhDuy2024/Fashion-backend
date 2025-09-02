@@ -7,9 +7,9 @@ const schema = new Schema({
   name: String,
   discount: Number,
   expireAt: Date,
-  deleted: {
-    type: Boolean,
-    default: false
+  status: {
+    type: String,
+    default: "active"
   },
   createdBy: String,
   updatedBy: String,
@@ -18,6 +18,8 @@ const schema = new Schema({
     slug: "name",
     unique: true
   }
+}, {
+  timestamps: true
 })
 
 export const Coupon = mongoose.model("Coupon", schema, "coupons");

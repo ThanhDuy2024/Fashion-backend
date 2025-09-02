@@ -4,6 +4,7 @@ import accountAdminRoute from "./accountAdmin.route";
 import categoryRoute from "./category.route";
 import roleRoute from "./role.route";
 import styleRoute from "./style.route";
+import couponRoute from "./coupon.route";
 const route = Router();
 
 route.use('/account', accountAdminRoute);
@@ -13,5 +14,7 @@ route.use('/category', middleware.verifyAccount, categoryRoute);
 route.use('/role', middleware.verifyAccount, roleRoute);
 
 route.use('/style', middleware.verifyAccount, styleRoute);
+
+route.use('/coupon', middleware.verifyAccount, couponRoute);
 
 export default route;
