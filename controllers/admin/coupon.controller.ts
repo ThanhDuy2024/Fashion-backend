@@ -19,7 +19,7 @@ export const create = async (req: admin, res: Response) => {
     });
   }
 
-  if(status !== "active" && status !== "inactive") {
+  if (status !== "active" && status !== "inactive") {
     return res.status(400).json({
       code: "error",
       message: "Status must active or inactive!"
@@ -36,7 +36,7 @@ export const create = async (req: admin, res: Response) => {
   req.body.discount = parseInt(String(req.body.discount));
   req.body.createdBy = req.admin.id;
   req.body.updatedBy = req.admin.id;
-  req.body.expireAt = Date.now() + parseInt(String(totalDays)) * 24 * 60 * 60 * 1000;
+  req.body.expireAt = new Date(Date.now() + parseInt(String(totalDays)) * 24 * 60 * 60 * 1000);
 
   await Coupon.create(req.body);
 
@@ -49,10 +49,10 @@ export const create = async (req: admin, res: Response) => {
 export const list = async (req: admin, res: Response) => {
   const find: any = {};
 
-  const { search, page, status} = req.query;
+  const { search, page, status } = req.query;
 
   //search
-  if(search) {
+  if (search) {
     const keyword = slugify(String(search), {
       lower: true
     });
@@ -64,15 +64,15 @@ export const list = async (req: admin, res: Response) => {
   //end search
 
   //status
-  if(status === "active" || status === "inactive") {
+  if (status === "active" || status === "inactive") {
     find.status = status;
   }
   //end status
 
 
   //pagination
-  let pageNumber:number = 1;
-  if(page) {
+  let pageNumber: number = 1;
+  if (page) {
     pageNumber = parseInt(String(page));
   }
   const countDocuments = await Coupon.countDocuments(find);
@@ -140,7 +140,7 @@ export const detail = async (req: admin, res: Response) => {
       })
     }
 
-    const finalData:any = {
+    const finalData: any = {
       id: check.id,
       name: check.name,
       discount: String(check.discount) + "%",
@@ -163,3 +163,79 @@ export const detail = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const edit = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, discount, startDay, endDay, status } = req.body;
+
+    if(status !== "active" && status !== "inactive") {
+      return res.status(400).json({
+        code: "error",
+        message: "Status only active or inactive!"
+      })
+    }
+
+    const check = await Coupon.findOne({
+      _id: id,
+    })
+
+    if (!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "A coupon is not found!"
+      })
+    }
+
+    if (name !== check.name) {
+      const checkName = await Coupon.findOne({
+        _id: { $ne: id },
+        name: name,
+      });
+
+      if (checkName) {
+        return res.status(400).json({
+          code: "error",
+          message: "Coupon name has been existed!"
+        })
+      }
+    }
+
+    const start = moment(startDay, "YYYY-MM-DD")
+    const end = moment(endDay, "YYYY-MM-DD")
+    let checkStartDay = moment(check.startDate, "YYYY-MM-DD")
+    let checkEndDay = moment(check.endDate, "YYYY-MM-DD");
+
+    if(start !== checkStartDay) {
+      checkStartDay = start;
+    }
+
+    if(end !== checkEndDay) {
+      checkEndDay = end;
+    }
+
+    const totalDurations = checkEndDay.diff(checkStartDay, "days");
+    req.body.startDate = checkStartDay;
+    req.body.endDate = checkEndDay;
+    req.body.expireAt = new Date(Date.now() + parseInt(String(totalDurations)) * 24 * 60 * 60 * 1000);
+    req.body.updatedBy = req.admin.id
+    req.body.discount = parseInt(discount);
+
+    await Coupon.updateOne({
+      _id: check.id,
+    }, req.body);
+    
+
+    res.json({
+      code: "success",
+      message: "A coupon has been edited!"
+    })
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "A coupon is not found!"
+    })
+  }
+}
+
+//fix status in create in all controller

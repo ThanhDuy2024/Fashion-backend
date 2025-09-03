@@ -8,4 +8,6 @@ route.post('/create', couponValidate, couponController.create);
 route.get('/list', couponController.list);
 
 route.get('/detail/:id', couponController.detail);
+
+route.patch('/edit/:id', couponValidate, couponController.edit);
 export default route;
