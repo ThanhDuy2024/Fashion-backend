@@ -238,4 +238,33 @@ export const edit = async (req: admin, res: Response) => {
   }
 }
 
+export const deleteCoupon = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await Coupon.findOne({
+      _id: id,
+    });
+
+    if(!check) {
+      return res.json({
+        code: "error",
+        message: "A coupon is not found!"
+      })
+    }
+
+    await Coupon.deleteOne({
+      _id: check.id
+    })
+    res.json({
+      code: "success",
+      message: "A coupon has been deleted!"
+    })
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: "A coupon is not found!"
+    })
+  }
+}
 //fix status in create in all controller

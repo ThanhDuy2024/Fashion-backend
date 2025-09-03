@@ -10,4 +10,6 @@ route.get('/list', couponController.list);
 route.get('/detail/:id', couponController.detail);
 
 route.patch('/edit/:id', couponValidate, couponController.edit);
+
+route.delete('/delete/:id', couponController.deleteCoupon);
 export default route;
