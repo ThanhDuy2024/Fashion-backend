@@ -3,10 +3,19 @@ import { admin } from "../../interface/admin.interface";
 import { Style } from "../../models/style.model";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import * as paginationFeature from "../../helpers/pagination.helper";
+import { rolePermission } from "../../enums/permission";
 import moment from "moment";
 import slugify from "slugify";
 
 export const styleCreate = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleCreate)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   const { name } = req.body;
 
   const check = await Style.findOne({
@@ -35,6 +44,14 @@ export const styleCreate = async (req: admin, res: Response) => {
 }
 
 export const styleList = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleList)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   const find: any = {
     deleted: false
   }
@@ -116,6 +133,14 @@ export const styleList = async (req: admin, res: Response) => {
 }
 
 export const styleDetail = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleDetail)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   try {
     const { id } = req.params;
     
@@ -151,6 +176,14 @@ export const styleDetail = async (req: admin, res: Response) => {
 }
 
 export const styleEdit = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleEdit)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   try {
     const { id } = req.params;
     
@@ -207,6 +240,14 @@ export const styleEdit = async (req: admin, res: Response) => {
 }
 
 export const styleDelete = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleDelete)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   try {
     const { id } = req.params;
     const check = await Style.findOne({
@@ -243,6 +284,14 @@ export const styleDelete = async (req: admin, res: Response) => {
 }
 
 export const styleTrashList = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleTrashList)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   const find:any = {
     deleted: true
   }
@@ -308,6 +357,14 @@ export const styleTrashList = async (req: admin, res: Response) => {
 }
 
 export const styleTrashRestore = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleTrashRestore)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   try {
     const { id } = req.params;
     const check = await Style.findOne({
@@ -345,6 +402,14 @@ export const styleTrashRestore = async (req: admin, res: Response) => {
 }
 
 export const styleTrashDelete = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.styleTrashDelete)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   try {
     const id = req.params.id;
 
