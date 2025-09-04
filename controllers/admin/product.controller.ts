@@ -5,6 +5,7 @@ import { Style } from "../../models/style.model";
 import * as checkSeaon from "../../enums/season";
 import * as checkSize from "../../enums/size";
 import { Product } from "../../models/product.model";
+
 export const create = async (req: admin, res: Response) => {
   try {
     const { categoryIds, styleId, season, size, quantity, originPrice, currentPrice, orginOfProduction } = req.body;
@@ -62,7 +63,7 @@ export const create = async (req: admin, res: Response) => {
     }
 
     req.body.size = JSON.parse(size);
-    req.body.size = new Set(req.body.size);
+    req.body.size = new Set(req.body.size); //khi set lai thi no thanh mot object
     req.body.size = Array.from(req.body.size);
 
     const checkSizeArray = Object.values(checkSize.sizeEnum);
