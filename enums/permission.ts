@@ -31,4 +31,12 @@ export enum rolePermission {
   styleTrashRestore = "style-trash-restore",
   styleTrashDelete = "style-trash-delete",
   //end style role
+
+  //coupon role
+  couponCreate = "coupon-create",
+  couponList = "coupon-list",
+  couponDetail = "coupon-detail",
+  couponEdit = "coupon-edit",
+  couponDelete = "coupon-delete",
+  //end coupon role
 }

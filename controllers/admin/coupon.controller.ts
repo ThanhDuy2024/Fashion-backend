@@ -4,9 +4,17 @@ import { Coupon } from "../../models/coupon.model";
 import moment from "moment";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import * as paginationFeature from "../../helpers/pagination.helper";
+import { rolePermission } from "../../enums/permission";
 import slugify from "slugify";
 
 export const create = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.couponCreate)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
   const { name, startDay, endDay, status } = req.body
   const check = await Coupon.findOne({
     name: name,
@@ -47,6 +55,14 @@ export const create = async (req: admin, res: Response) => {
 }
 
 export const list = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.couponList)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
+
   const find: any = {};
 
   const { search, page, status } = req.query;
@@ -127,6 +143,13 @@ export const list = async (req: admin, res: Response) => {
 }
 
 export const detail = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.couponDetail)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
     const check = await Coupon.findOne({
@@ -165,6 +188,13 @@ export const detail = async (req: admin, res: Response) => {
 }
 
 export const edit = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.couponEdit)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
     const { name, discount, startDay, endDay, status } = req.body;
@@ -239,6 +269,13 @@ export const edit = async (req: admin, res: Response) => {
 }
 
 export const deleteCoupon = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.couponDelete)) {
+    return res.status(400).json({
+      code: "error",
+      message: "Your account is not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
 
