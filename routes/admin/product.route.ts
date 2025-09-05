@@ -22,4 +22,6 @@ route.delete('/delete/:id', productController.deleteSoft);
 route.get('/trash/list', productController.trashList);
 
 route.patch('/trash/restore/:id', productController.trashRestore);
+
+route.delete('/trash/delete/:id', productController.trashDelete);
 export default route;
