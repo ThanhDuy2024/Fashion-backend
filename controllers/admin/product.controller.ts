@@ -9,8 +9,16 @@ import { AccountAdmin } from "../../models/accountAdmin.model";
 import * as paginationFeature from "../../helpers/pagination.helper";
 import moment from "moment";
 import slugify from "slugify";
+import { rolePermission } from "../../enums/permission";
 
 export const create = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productCreate)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const { categoryIds, styleId, season, size, quantity, originPrice, currentPrice } = req.body;
 
@@ -100,6 +108,13 @@ export const create = async (req: admin, res: Response) => {
 }
 
 export const list = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productList)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const find: any = {
       deleted: false
@@ -210,6 +225,13 @@ export const list = async (req: admin, res: Response) => {
 }
 
 export const deltail = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productDetail)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
 
@@ -282,6 +304,13 @@ export const deltail = async (req: admin, res: Response) => {
 }
 
 export const edit = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productEdit)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
 
@@ -387,6 +416,13 @@ export const edit = async (req: admin, res: Response) => {
 }
 
 export const deleteSoft = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productDelete)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
 
@@ -423,6 +459,13 @@ export const deleteSoft = async (req: admin, res: Response) => {
 }
 
 export const trashList = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productTrashList)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const find: any = {
       deleted: true
@@ -512,6 +555,13 @@ export const trashList = async (req: admin, res: Response) => {
 }
 
 export const trashRestore = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productTrashRestore)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
 
@@ -547,6 +597,13 @@ export const trashRestore = async (req: admin, res: Response) => {
 }
 
 export const trashDelete = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.productTrashDelete)) {
+    return res.status(400).json({
+      code: "success",
+      message: "Account has not permitted in feature!"
+    })
+  }
   try {
     const { id } = req.params;
 

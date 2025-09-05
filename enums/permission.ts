@@ -39,4 +39,15 @@ export enum rolePermission {
   couponEdit = "coupon-edit",
   couponDelete = "coupon-delete",
   //end coupon role
+
+  //product role
+  productCreate = "product-create",
+  productList = "product-list",
+  productDetail = "product-detail",
+  productEdit = "product-edit",
+  productDelete = "product-delete",
+  productTrashList = "product-trash-list",
+  productTrashRestore = "product-trash-restore",
+  productTrashDelete = "product-trash-delete",
+  //end product role
 }
