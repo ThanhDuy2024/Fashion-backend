@@ -208,3 +208,75 @@ export const list = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const deltail = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await Product.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Product is not found!"
+      });
+    };
+
+    const finalData:any = {
+      id: check.id,
+      name: check.name,
+      image: check.image,
+      categoryIds: check.categoryIds,
+      sex: check.sex,
+      styleId: check.styleId,
+      season: check.season,
+      size: check.size,
+      material: check.material,
+      quantity: check.quantity,
+      originPrice: check.originPrice,
+      currentPrice: check.currentPrice,
+      orginOfProduction: check.orginOfProduction,
+      status: check.status,
+      createdByFormat: "",
+      updatedByFormat: "",
+    };
+
+    if(check.createdBy) {
+      const account = await AccountAdmin.findOne({
+        _id: check.createdBy,
+        deleted: false
+      });
+
+      if(account) {
+        finalData.createdByFormat = account.fullName;
+      }
+    }
+
+    if(check.updatedBy) {
+      const account = await AccountAdmin.findOne({
+        _id: check.updatedBy,
+        deleted: false
+      });
+
+      if(account) {
+        finalData.updatedByFormat = account.fullName;
+      }
+    }
+
+    finalData.createAtFormat = moment(check.createdAt).format("HH:mm DD/MM/YYYY")
+    finalData.updatedAtFormat = moment(check.updatedAt).format("HH:mm DD/MM/YYYY")
+
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
