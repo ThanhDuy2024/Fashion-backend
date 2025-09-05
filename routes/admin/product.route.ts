@@ -18,4 +18,6 @@ route.get('/detail/:id', productController.deltail);
 route.patch('/edit/:id', upload.single("image"), productValidate, productController.edit);
 
 route.delete('/delete/:id', productController.deleteSoft);
+
+route.get('/trash/list', productController.trashList);
 export default route;

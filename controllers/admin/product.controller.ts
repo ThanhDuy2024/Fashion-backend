@@ -421,3 +421,93 @@ export const deleteSoft = async (req: admin, res: Response) => {
     })
   }
 }
+
+
+export const trashList = async (req: admin, res: Response) => {
+  try {
+    const find: any = {
+      deleted: true
+    };
+
+
+    const { search, status, page } = req.query;
+
+    //sort follow createAt
+    const sort: any = {
+      deletedAt: "desc"
+    }
+
+    //end sort follow createAt
+
+    //search
+    if (search) {
+      const keyword = slugify(String(search), {
+        lower: true
+      });
+
+      const regex = new RegExp(keyword);
+
+      find.slug = regex;
+    }
+    //end search
+
+    //status filter
+    if (status === "active" || status === "inactive") {
+      find.status = status;
+    }
+    //end status filter
+
+
+    //pagination
+    let pageNumber: number = 1;
+    if (page) {
+      pageNumber = parseInt(String(page));
+    };
+    const countDocuments = await Product.countDocuments(find);
+    const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+
+    //end pagination
+
+    const product = await Product.find(find).limit(pagination.limit).skip(pagination.skip)
+      .sort(sort);
+
+    const finalData: any = [];
+
+    for (const item of product) {
+      const rawData: any = {
+        id: item.id,
+        name: item.name,
+        image: item.image,
+        status: item.status,
+        quantity: item.quantity,
+        currentPrice: item.currentPrice,
+        deletedByFormat: "",
+      };
+
+      if (item.deletedBy) {
+        const check = await AccountAdmin.findOne({
+          _id: item.deletedBy,
+          deleted: false
+        });
+
+        if (check) {
+          rawData.deletedByFormat = check.fullName
+        }
+      }
+
+      rawData.deletedAtFormat = moment(item.deletedAt).format("HH:mm DD/MM/YYYY")
+
+      finalData.push(rawData);
+    }
+    res.json({
+      code: "success",
+      data: finalData,
+      totalPage: pagination.totalPage
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
