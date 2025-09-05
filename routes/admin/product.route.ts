@@ -16,4 +16,6 @@ route.get('/list', productController.list);
 route.get('/detail/:id', productController.deltail);
 
 route.patch('/edit/:id', upload.single("image"), productValidate, productController.edit);
+
+route.delete('/delete/:id', productController.deleteSoft);
 export default route;

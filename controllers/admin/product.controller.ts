@@ -385,3 +385,39 @@ export const edit = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const deleteSoft = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await Product.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Product is not found!"
+      });
+    };
+
+    await Product.updateOne({
+      _id: id,
+    }, {
+      deleted: true,
+      deletedAt: Date.now(),
+      deletedBy: req.admin.id
+    })
+
+    res.json({
+      code: "success",
+      message: "Product has been deleted!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
