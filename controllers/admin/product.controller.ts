@@ -422,7 +422,6 @@ export const deleteSoft = async (req: admin, res: Response) => {
   }
 }
 
-
 export const trashList = async (req: admin, res: Response) => {
   try {
     const find: any = {
@@ -503,6 +502,41 @@ export const trashList = async (req: admin, res: Response) => {
       code: "success",
       data: finalData,
       totalPage: pagination.totalPage
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const trashRestore = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await Product.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if(!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Product is not found!"
+      });
+    };
+
+    await Product.updateOne({
+      _id: id,
+    }, {
+      deleted: false,
+      updatedBy: req.admin.id
+    })
+
+    res.json({
+      code: "success",
+      message: "Product has been restored!"
     })
   } catch (error) {
     res.status(400).json({
