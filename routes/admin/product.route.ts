@@ -14,4 +14,6 @@ route.post('/create', upload.single("image"), productValidate, productController
 route.get('/list', productController.list);
 
 route.get('/detail/:id', productController.deltail);
+
+route.patch('/edit/:id', upload.single("image"), productValidate, productController.edit);
 export default route;
