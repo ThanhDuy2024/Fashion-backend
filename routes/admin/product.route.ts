@@ -11,4 +11,5 @@ const upload = multer({
 
 route.post('/create', upload.single("image"), productValidate, productController.create);
 
+route.get('/list', productController.list);
 export default route;

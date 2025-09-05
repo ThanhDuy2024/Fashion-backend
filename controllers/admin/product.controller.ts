@@ -5,10 +5,14 @@ import { Style } from "../../models/style.model";
 import * as checkSeaon from "../../enums/season";
 import * as checkSize from "../../enums/size";
 import { Product } from "../../models/product.model";
+import { AccountAdmin } from "../../models/accountAdmin.model";
+import * as paginationFeature from "../../helpers/pagination.helper";
+import moment from "moment";
+import slugify from "slugify";
 
 export const create = async (req: admin, res: Response) => {
   try {
-    const { categoryIds, styleId, season, size, quantity, originPrice, currentPrice, orginOfProduction } = req.body;
+    const { categoryIds, styleId, season, size, quantity, originPrice, currentPrice } = req.body;
 
     if (categoryIds) {
       req.body.categoryIds = JSON.parse(categoryIds);
@@ -80,9 +84,9 @@ export const create = async (req: admin, res: Response) => {
     req.body.originPrice = parseInt(String(originPrice));
     req.body.currentPrice = parseInt(String(currentPrice));
     req.body.createdBy = req.admin.id,
-    req.body.updatedBy = req.admin.id,
+      req.body.updatedBy = req.admin.id,
 
-    await Product.create(req.body);
+      await Product.create(req.body);
     res.json({
       code: "success",
       message: "Product has been created!"
@@ -91,6 +95,116 @@ export const create = async (req: admin, res: Response) => {
     res.status(404).json({
       code: "error",
       message: "Some item is not found in data!"
+    })
+  }
+}
+
+export const list = async (req: admin, res: Response) => {
+  try {
+    const find: any = {
+      deleted: false
+    };
+
+
+    const { search, status, page, price, quantity } = req.query;
+
+    //sort follow createAt
+    const sort: any = {}
+
+    if(price && (price === "desc" || price == "asc")) {
+      sort.currentPrice = price;
+    }
+
+    if(quantity && (quantity == "desc" || quantity == "asc")) {
+      sort.quantity = quantity;
+    }
+
+    sort.createdAt = "desc"
+
+    //end sort follow createAt
+
+    //search
+    if (search) {
+      const keyword = slugify(String(search), {
+        lower: true
+      });
+
+      const regex = new RegExp(keyword);
+
+      find.slug = regex;
+    }
+    //end search
+
+    //status filter
+    if (status === "active" || status === "inactive") {
+      find.status = status;
+    }
+    //end status filter
+
+
+    //pagination
+    let pageNumber: number = 1;
+    if (page) {
+      pageNumber = parseInt(String(page));
+    };
+    const countDocuments = await Product.countDocuments(find);
+    const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+
+    //end pagination
+
+    const product = await Product.find(find).limit(pagination.limit).skip(pagination.skip)
+      .sort(sort);
+
+    const finalData: any = [];
+
+    for (const item of product) {
+      const rawData: any = {
+        id: item.id,
+        name: item.name,
+        image: item.image,
+        status: item.status,
+        quantity: item.quantity,
+        currentPrice: item.currentPrice,
+        createdByFormat: "",
+        updatedByFormat: "",
+      };
+
+      if (item.createdBy) {
+        const check = await AccountAdmin.findOne({
+          _id: item.createdBy,
+          deleted: false
+        });
+
+        if (check) {
+          rawData.createdByFormat = check.fullName
+        }
+      }
+
+      if (item.updatedBy) {
+        const check = await AccountAdmin.findOne({
+          _id: item.updatedBy,
+          deleted: false
+        });
+
+        if (check) {
+          rawData.updatedByFormat = check.fullName
+        }
+      }
+
+      rawData.createAtFormat = moment(item.createdAt).format("HH:mm DD/MM/YYYY")
+      rawData.updateAtFormat = moment(item.updatedAt).format("HH:mm DD/MM/YYYY")
+
+      finalData.push(rawData);
+    }
+    res.json({
+      code: "success",
+      data: finalData,
+      totalPage: pagination.totalPage
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
     })
   }
 }
