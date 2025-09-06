@@ -6,6 +6,7 @@ import * as paginationFeature from "../../helpers/pagination.helper";
 import { rolePermission } from "../../enums/permission";
 import moment from "moment";
 import slugify from "slugify";
+import { Product } from "../../models/product.model";
 
 export const styleCreate = async (req: admin, res: Response) => {
   const { permission } = req.admin;
@@ -424,6 +425,19 @@ export const styleTrashDelete = async (req: admin, res: Response) => {
         message: "The style has not been existed!"
       })
       return;
+    }
+
+    const product = await Product.find({
+      styleId: id,
+    });
+
+    for (const item of product) {
+      await Product.updateOne({
+        _id: item.id
+      }, {
+        styleId: "",
+        updatedBy: req.admin.id
+      })
     }
 
     await Style.deleteOne({

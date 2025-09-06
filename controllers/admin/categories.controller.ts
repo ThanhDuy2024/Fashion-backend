@@ -8,6 +8,7 @@ import slugify from "slugify";
 import { pagination } from "../../helpers/pagination.helper";
 import { rolePermission } from "../../enums/permission";
 import { softDelete } from "../../enums/softDeleteString";
+import { Product } from "../../models/product.model";
 export const categoryCreate = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if (!permission.includes(rolePermission.create)) {
@@ -543,7 +544,7 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
         parentCategoryId: checkCategoryArray
       });
     }
-    
+
     await Categories.updateOne({
       _id: id,
       deleted: true
@@ -600,6 +601,22 @@ export const categoriesTrashDelete = async (req: admin, res: Response) => {
           parentCategoryId: newParentId,
           updatedBy: req.admin.id
         })
+      }
+    }
+
+    const product = await Product.find({
+      categoryIds: id
+    });
+
+    if(product) {
+      for (const item of product) {
+        const checkCategoryArray = item.categoryIds.filter(category => category !== id);
+        await Product.updateOne({
+          _id: item.id,
+        }, {
+          categoryIds: checkCategoryArray,
+          updatedBy: req.admin.id,
+        });
       }
     }
 
