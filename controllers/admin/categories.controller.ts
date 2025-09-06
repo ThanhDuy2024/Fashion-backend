@@ -7,9 +7,10 @@ import { AccountAdmin } from "../../models/accountAdmin.model";
 import slugify from "slugify";
 import { pagination } from "../../helpers/pagination.helper";
 import { rolePermission } from "../../enums/permission";
+import { softDelete } from "../../enums/softDeleteString";
 export const categoryCreate = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.create)) {
+  if (!permission.includes(rolePermission.create)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -71,7 +72,7 @@ export const categoryCreate = async (req: admin, res: Response) => {
 
 export const categoryList = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.list)) {
+  if (!permission.includes(rolePermission.list)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -201,7 +202,7 @@ export const categoriesTree = async (req: admin, res: Response) => {
 
 export const categoryDetail = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.detail)) {
+  if (!permission.includes(rolePermission.detail)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -235,15 +236,16 @@ export const categoryDetail = async (req: admin, res: Response) => {
     }
 
     for (const item of category.parentCategoryId) {
-      const check = await Categories.findOne({
-        _id: item,
-        deleted: false
-      });
-
-      if (check) {
-        dataFinal.parentCategoryId.push(item);
+      if (!item.includes(softDelete.softDelete)) {
+        const check = await Categories.findOne({
+          _id: item,
+          deleted: false
+        });
+        if (check) {
+          dataFinal.parentCategoryId.push(item);
+        }
       }
-    }
+    };
 
     dataFinal.createdAtFormat = moment(category.createdAt).format("HH:mm DD/MM/YYYY");
     dataFinal.updatedAtFormat = moment(category.updatedAt).format("HH:mm DD/MM/YYYY");
@@ -271,6 +273,7 @@ export const categoryDetail = async (req: admin, res: Response) => {
       data: dataFinal
     })
   } catch (error) {
+    console.log(error);
     res.status(404).json({
       code: "error",
       message: "categoryId invalid!"
@@ -280,7 +283,7 @@ export const categoryDetail = async (req: admin, res: Response) => {
 
 export const categoryEdit = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.edit)) {
+  if (!permission.includes(rolePermission.edit)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -357,7 +360,7 @@ export const categoryEdit = async (req: admin, res: Response) => {
 
 export const categoryDelete = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.delete)) {
+  if (!permission.includes(rolePermission.delete)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -376,6 +379,26 @@ export const categoryDelete = async (req: admin, res: Response) => {
         message: "The category has not been existed!"
       })
       return;
+    }
+
+    const categoryParents = await Categories.find({
+      parentCategoryId: check.id,
+    });
+
+    for (const item of categoryParents) {
+      const checkCategoryArray: string[] = [];
+      for (const jitem of item.parentCategoryId) {
+        if (jitem === check.id) {
+          checkCategoryArray.push(jitem + softDelete.softDelete);
+        } else {
+          checkCategoryArray.push(jitem);
+        }
+      }
+      await Categories.updateOne({
+        _id: item.id
+      }, {
+        parentCategoryId: checkCategoryArray
+      });
     }
 
     await Categories.updateOne({
@@ -401,7 +424,7 @@ export const categoryDelete = async (req: admin, res: Response) => {
 
 export const categoryTrashList = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.trashList)) {
+  if (!permission.includes(rolePermission.trashList)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -486,7 +509,7 @@ export const categoryTrashList = async (req: admin, res: Response) => {
 
 export const categoriesTrashRestore = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.trashRestore)) {
+  if (!permission.includes(rolePermission.trashRestore)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
@@ -507,6 +530,20 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
       return;
     }
 
+    const category = await Categories.find({
+      parentCategoryId: check.id + softDelete.softDelete
+    });
+
+    for (const item of category) {
+      const checkCategoryArray:string[] = item.parentCategoryId.map(category => category === check.id + softDelete.softDelete ? check.id : category);
+
+      await Categories.updateOne({
+        _id: item.id,
+      }, {
+        parentCategoryId: checkCategoryArray
+      });
+    }
+    
     await Categories.updateOne({
       _id: id,
       deleted: true
@@ -528,7 +565,7 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
 
 export const categoriesTrashDelete = async (req: admin, res: Response) => {
   const { permission } = req.admin;
-  if(!permission.includes(rolePermission.trashDelete)) {
+  if (!permission.includes(rolePermission.trashDelete)) {
     return res.status(401).json({
       code: "error",
       message: "Account is not permitted in this feature!"
