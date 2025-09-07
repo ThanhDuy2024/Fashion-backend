@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { admin } from "../../interface/admin.interface";
 import { Role } from "../../models/role.model";
+import moment from "moment";
+import slugify from "slugify";
+import * as paginationFeature from "../../helpers/pagination.helper";
 
 export const register = async (req: Request, res: Response) => {
   const check = await AccountAdmin.findOne({
@@ -107,7 +110,7 @@ export const profile = async (req: admin, res: Response) => {
 export const profileEdit = async (req: admin, res: Response) => {
   try {
     const { email, status } = req.body;
-    if(status !== "active" && status !== "inactive") {
+    if (status !== "active" && status !== "inactive") {
       res.status(400).json({
         code: "error",
         message: "your status is incorrect!"
@@ -115,7 +118,7 @@ export const profileEdit = async (req: admin, res: Response) => {
       return;
     }
 
-    if(req.file) {
+    if (req.file) {
       req.body.image = req.file.path;
     } else {
       delete req.body.image;
@@ -123,11 +126,11 @@ export const profileEdit = async (req: admin, res: Response) => {
 
 
     const check = await AccountAdmin.findOne({
-      _id: { $ne: req.admin.id},
+      _id: { $ne: req.admin.id },
       email: email
     })
 
-    if(check) {
+    if (check) {
       return res.status(400).json({
         code: "error",
         message: "Your new email are existed!"
@@ -210,8 +213,8 @@ export const create = async (req: admin, res: Response) => {
       email: email,
     });
 
-    if(checkEmail) {
-       return res.status(400).json({
+    if (checkEmail) {
+      return res.status(400).json({
         code: "success",
         message: "Email has been existed!"
       });
@@ -221,7 +224,7 @@ export const create = async (req: admin, res: Response) => {
       _id: roleId,
     });
 
-    if(!checkRoleId) {
+    if (!checkRoleId) {
       return res.status(404).json({
         code: "error",
         message: "Role is not found!",
@@ -231,10 +234,10 @@ export const create = async (req: admin, res: Response) => {
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(String(password), salt);
-    
+
     req.body.password = hash;
 
-    if(req.file) {
+    if (req.file) {
       req.body.image = req.file.path;
     } else {
       delete req.body.image;
@@ -256,4 +259,87 @@ export const create = async (req: admin, res: Response) => {
       message: error,
     })
   }
+}
+
+export const list = async (req: admin, res: Response) => {
+  const find: any = {
+    deleted: false
+  };
+
+  const { search, status, page } = req.query;
+
+  //search
+  if (search) {
+    const keyword = slugify(String(search), {
+      lower: true,
+    });
+    const regex = new RegExp(keyword);
+    find.slug = regex;
+  }
+  //end search
+
+  //status filter
+  if (status === "active" || status === "inactive") {
+    find.status = status;
+  }
+  //end status filter
+
+  //pagination
+  let pageNumber: number = 1;
+  if (page) {
+    pageNumber = parseInt(String(page));
+  };
+  const countDocuments = await AccountAdmin.countDocuments(find);
+  const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+
+  //end pagination
+
+  const account = await AccountAdmin.find(find).sort({
+    createdAt: "desc",
+  }).limit(pagination.limit).skip(pagination.skip);
+
+  const finalData: any = [];
+
+  for (const item of account) {
+    const rawData: any = {
+      id: item.id,
+      name: item.fullName,
+      image: item.image,
+      status: item.status,
+      createdBy: "",
+      updatedBy: "",
+    }
+
+    if (item.createdBy) {
+      const check = await AccountAdmin.findOne({
+        _id: item.createdBy,
+        deleted: false
+      });
+
+      if (check) {
+        rawData.createdBy = check.fullName;
+      }
+    }
+
+    if (item.updatedBy) {
+      const check = await AccountAdmin.findOne({
+        _id: item.updatedBy,
+        deleted: false
+      });
+
+      if (check) {
+        rawData.updatedBy = check.fullName;
+      }
+    }
+
+    rawData.createdAtFormat = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
+    rawData.updatedAtFormat = moment(item.updatedAt).format("HH:mm DD/MM/YYYY");
+    finalData.push(rawData);
+  }
+
+  res.json({
+    code: "success",
+    data: finalData,
+    totalPage: pagination.totalPage
+  });
 }
