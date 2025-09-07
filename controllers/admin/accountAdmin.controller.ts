@@ -222,6 +222,7 @@ export const create = async (req: admin, res: Response) => {
 
     const checkRoleId = await Role.findOne({
       _id: roleId,
+      deleted: false
     });
 
     if (!checkRoleId) {
@@ -354,14 +355,14 @@ export const deltail = async (req: admin, res: Response) => {
       deleted: false
     });
 
-    if(!account) {
+    if (!account) {
       return res.status(404).json({
         code: "error",
         message: "Account is not found!"
       });
     }
 
-    const finalData:any = {
+    const finalData: any = {
       id: account.id,
       name: account.fullName,
       image: account.image,
@@ -396,6 +397,17 @@ export const deltail = async (req: admin, res: Response) => {
 
       if (check) {
         finalData.updatedBy = check.fullName;
+      }
+    }
+
+    if (account.roleId) {
+      const checkRoleId = await Role.findOne({
+        _id: account.roleId,
+        deleted: false
+      });
+
+      if(checkRoleId) {
+        finalData.roleId = checkRoleId.id;
       }
     }
 
