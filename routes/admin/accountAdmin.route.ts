@@ -20,7 +20,7 @@ route.patch('/profile/edit', middleware.verifyAccount, upload.single("image"), v
 
 route.post("/refresh", accountAdminController.refresh);
 
-route.post("/create", middleware.verifyAccount, upload.single('image'), accountAdminController.create);
+route.post("/create", middleware.verifyAccount, upload.single('image'), validate.accountAdminCreate, accountAdminController.create);
 
 route.get("/list", middleware.verifyAccount, accountAdminController.list);
 
