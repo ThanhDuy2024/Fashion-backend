@@ -344,3 +344,69 @@ export const list = async (req: admin, res: Response) => {
     totalPage: pagination.totalPage
   });
 }
+
+export const deltail = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const account = await AccountAdmin.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!account) {
+      return res.status(404).json({
+        code: "error",
+        message: "Account is not found!"
+      });
+    }
+
+    const finalData:any = {
+      id: account.id,
+      name: account.fullName,
+      image: account.image,
+      email: account.email,
+      address: account.address,
+      phone: account.phone,
+      roleId: "",
+      status: account.status,
+      createdBy: "",
+      updatedBy: "",
+    };
+
+    finalData.createdAtFormat = moment(account.createdAt).format("HH:mm DD/MM/YYYY");
+    finalData.updatedAtFormat = moment(account.updatedAt).format("HH:mm DD/MM/YYYY");
+
+    if (account.createdBy) {
+      const check = await AccountAdmin.findOne({
+        _id: account.createdBy,
+        deleted: false
+      });
+
+      if (check) {
+        finalData.createdBy = check.fullName;
+      }
+    }
+
+    if (account.updatedBy) {
+      const check = await AccountAdmin.findOne({
+        _id: account.updatedBy,
+        deleted: false
+      });
+
+      if (check) {
+        finalData.updatedBy = check.fullName;
+      }
+    }
+
+    res.json({
+      code: "error",
+      data: finalData
+    })
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: error
+    })
+  }
+}

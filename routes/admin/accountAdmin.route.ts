@@ -23,4 +23,6 @@ route.post("/refresh", accountAdminController.refresh);
 route.post("/create", middleware.verifyAccount, upload.single('image'), accountAdminController.create);
 
 route.get("/list", middleware.verifyAccount, accountAdminController.list);
+
+route.get("/detail/:id", middleware.verifyAccount, accountAdminController.deltail);
 export default route;
