@@ -263,6 +263,7 @@ export const create = async (req: admin, res: Response) => {
 
 export const list = async (req: admin, res: Response) => {
   const find: any = {
+    _id: { $ne: req.admin.id },
     deleted: false
   };
 
