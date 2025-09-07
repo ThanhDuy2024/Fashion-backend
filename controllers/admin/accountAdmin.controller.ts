@@ -3,6 +3,7 @@ import { AccountAdmin } from "../../models/accountAdmin.model";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { admin } from "../../interface/admin.interface";
+import { Role } from "../../models/role.model";
 
 export const register = async (req: Request, res: Response) => {
   const check = await AccountAdmin.findOne({
@@ -197,5 +198,62 @@ export const refresh = async (req: Request, res: Response) => {
       code: "error",
       message: "Refresh token expire in!"
     });
+  }
+}
+
+export const create = async (req: admin, res: Response) => {
+  try {
+
+    const { email, password, roleId } = req.body;
+
+    const checkEmail = await AccountAdmin.findOne({
+      email: email,
+    });
+
+    if(checkEmail) {
+       return res.status(400).json({
+        code: "success",
+        message: "Email has been existed!"
+      });
+    }
+
+    const checkRoleId = await Role.findOne({
+      _id: roleId,
+    });
+
+    if(!checkRoleId) {
+      return res.status(404).json({
+        code: "error",
+        message: "Role is not found!",
+      });
+    }
+
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(String(password), salt);
+    
+    req.body.password = hash;
+
+    if(req.file) {
+      req.body.image = req.file.path;
+    } else {
+      delete req.body.image;
+    }
+
+    req.body.createdBy = req.admin.id;
+    req.body.updatedBy = req.admin.id;
+
+    await AccountAdmin.create(req.body);
+
+    res.json({
+      code: "success",
+      message: "Accout has been created!"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "success",
+      message: error,
+    })
   }
 }

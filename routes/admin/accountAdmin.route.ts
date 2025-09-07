@@ -19,4 +19,6 @@ route.get("/profile", middleware.verifyAccount, accountAdminController.profile);
 route.patch('/profile/edit', middleware.verifyAccount, upload.single("image"), validate.profileValidate,accountAdminController.profileEdit);
 
 route.post("/refresh", accountAdminController.refresh);
+
+route.post("/create", middleware.verifyAccount, upload.single('image'), accountAdminController.create);
 export default route;
