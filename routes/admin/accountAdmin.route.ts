@@ -25,4 +25,6 @@ route.post("/create", middleware.verifyAccount, upload.single('image'), validate
 route.get("/list", middleware.verifyAccount, accountAdminController.list);
 
 route.get("/detail/:id", middleware.verifyAccount, accountAdminController.deltail);
+
+route.patch("/edit/:id", middleware.verifyAccount, upload.single('image'), validate.profileValidate, accountAdminController.edit);
 export default route;

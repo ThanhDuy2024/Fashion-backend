@@ -422,3 +422,74 @@ export const deltail = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const edit = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const account = await AccountAdmin.findOne({
+      _id: id,
+      deleted: false,
+    });
+
+    if(!account) {
+      return res.status(404).json({
+        code: "error",
+        message: "Account is not found!",
+      });
+    };
+
+    const { email } = req.body
+    const checkEmail = await AccountAdmin.findOne({
+      _id: { $ne: id },
+      email: email,
+    });
+
+    if(checkEmail) {
+      return res.status(404).json({
+        code: "success",
+        message: "Email has been existed!"
+      });
+    }
+
+    if(req.file){
+      req.body.image = req.file.path;
+    } else {
+      delete req.body.image;
+    }
+
+    const checkRoleId = await Role.findOne({
+      _id: req.body.roleId,
+      deleted: false
+    });
+
+    if(!checkRoleId) {
+      return res.status(404).json({
+        code: "error",
+        message: "Role is not found!"
+      });
+    }
+
+    if(req.body.status !== "active" && req.body.status !== "inactive") {
+      return res.status(400).json({
+        code: "error",
+        message: "Status has only active or inactive!"
+      });
+    }
+
+    await AccountAdmin.updateOne({
+      _id: id,
+      deleted: false
+    }, req.body);
+
+    res.json({
+      code: "success",
+      message: "Account has been edited!"
+    });
+  } catch (error) {
+    res.status(404).json({
+      code: "error",
+      message: error,
+    })
+  }
+}
