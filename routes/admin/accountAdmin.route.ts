@@ -27,4 +27,6 @@ route.get("/list", middleware.verifyAccount, accountAdminController.list);
 route.get("/detail/:id", middleware.verifyAccount, accountAdminController.deltail);
 
 route.patch("/edit/:id", middleware.verifyAccount, upload.single('image'), validate.profileValidate, accountAdminController.edit);
+
+route.delete("/delete/:id", middleware.verifyAccount, accountAdminController.deleted);
 export default route;

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -477,6 +477,8 @@ export const edit = async (req: admin, res: Response) => {
       });
     }
 
+    req.body.updatedBy = req.admin.id;
+
     await AccountAdmin.updateOne({
       _id: id,
       deleted: false
@@ -490,6 +492,43 @@ export const edit = async (req: admin, res: Response) => {
     res.status(404).json({
       code: "error",
       message: error,
+    })
+  }
+}
+
+export const deleted = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await AccountAdmin.findOne({
+      _id: { $ne: req.admin.id },
+      deleted: false
+    });
+
+    if (!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Account is not found!"
+      });
+    };
+
+    await AccountAdmin.updateOne({
+      _id: id,
+      deleted: false
+    }, {
+      deleted: true,
+      deletedAt: Date.now(),
+      deletedBy: req.admin.id
+    })
+
+    res.json({
+      code: "success",
+      message: "Account has been deleted!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
     })
   }
 }
