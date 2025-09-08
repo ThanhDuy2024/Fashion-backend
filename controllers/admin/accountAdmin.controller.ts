@@ -1,4 +1,4 @@
-import e, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -630,6 +630,39 @@ export const trashRestore = async (req: admin, res: Response) => {
     res.json({
       code: "success",
       message: "Account has been restored!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const trashDelete = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await AccountAdmin.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if (!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Account is not found!"
+      });
+    };
+
+    await AccountAdmin.deleteOne({
+      _id: id,
+      deleted: true
+    });
+
+    res.json({
+      code: "success",
+      message: "Account has been deleted!"
     })
   } catch (error) {
     res.status(400).json({

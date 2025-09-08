@@ -33,4 +33,6 @@ route.delete("/delete/:id", middleware.verifyAccount, accountAdminController.del
 route.get("/trash/list", middleware.verifyAccount, accountAdminController.trashList);
 
 route.patch("/trash/restore/:id", middleware.verifyAccount, accountAdminController.trashRestore);
+
+route.delete("/trash/delete/:id", middleware.verifyAccount, accountAdminController.trashDelete);
 export default route;
