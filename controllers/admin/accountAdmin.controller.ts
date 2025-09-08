@@ -501,7 +501,7 @@ export const deleted = async (req: admin, res: Response) => {
     const { id } = req.params;
 
     const check = await AccountAdmin.findOne({
-      _id: { $ne: req.admin.id },
+      _id: id,
       deleted: false
     });
 
@@ -602,4 +602,39 @@ export const trashList = async (req: admin, res: Response) => {
     data: finalData,
     totalPage: pagination.totalPage
   });
+}
+
+export const trashRestore = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const check = await AccountAdmin.findOne({
+      _id: id,
+      deleted: true
+    });
+
+    if (!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Product is not found!"
+      });
+    };
+
+    await AccountAdmin.updateOne({
+      _id: id,
+    }, {
+      deleted: false,
+      updatedBy: req.admin.id
+    })
+
+    res.json({
+      code: "success",
+      message: "Account has been restored!"
+    })
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
 }
