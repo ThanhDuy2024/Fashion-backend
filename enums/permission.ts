@@ -50,4 +50,15 @@ export enum rolePermission {
   productTrashRestore = "product-trash-restore",
   productTrashDelete = "product-trash-delete",
   //end product role
+
+  //account admin role
+  accountAdminCreate = "accountAdmin-create",
+  accountAdminList = "accountAdmin-list",
+  accountAdminDetail = "accountAdmin-detail",
+  accountAdminEdit = "accountAdmin-edit",
+  accountAdminDelete = "accountAdmin-delete",
+  accountAdminTrashList = "accountAdmin-trash-list",
+  accountAdminTrashRestore = "accountAdmin-trash-restore",
+  accountAdminTrashDelete = "accountAdmin-trash-delete",
+  //end accountAdmin role
 }
