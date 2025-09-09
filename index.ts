@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import adminRoute from "./routes/admin/index.route";
+import clientRoute from "./routes/clients/index.route";
 import * as database from "./configs/database";
 const app = express();
 const port = process.env.PORT;
@@ -18,6 +19,7 @@ app.use(cors({
   credentials: true, //cho phep gui cookie
 }));
 
+app.use("/api/client", clientRoute)
 app.use("/api/admin", adminRoute)
 
 app.listen(port, () => {
