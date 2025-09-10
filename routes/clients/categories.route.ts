@@ -4,4 +4,5 @@ const route = Router();
 
 route.get('/list', categoriesController.categoriesTree);
 
+route.get('/:id/product', categoriesController.getProductInCategory);
 export default route;

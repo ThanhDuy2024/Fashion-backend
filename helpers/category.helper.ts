@@ -37,3 +37,15 @@ const categoriesTree = (categories: any[], parentId: string = "") => {
 };
 
 export default categoriesTree;
+
+export const getAllChildrenCategory:any = (categoryId:string, categories:any[], path:any = []) => {
+  const getCategory = categories.find(c => c.parentCategoryId.includes(categoryId));
+
+  if(!getCategory) {
+    return [...path, categoryId];
+  }
+
+  let categoryArray = [...path, categoryId];
+
+  return getAllChildrenCategory(getCategory.id, categories, categoryArray);
+}
