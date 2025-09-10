@@ -205,6 +205,46 @@ export const refresh = async (req: Request, res: Response) => {
   }
 }
 
+export const forgotPassword = async (req: admin, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const account = await AccountAdmin.findOne({
+      _id: req.admin.id,
+    });
+
+    const checkCurrentPassword = bcrypt.compareSync(currentPassword, String(account?.password));
+
+    if(!checkCurrentPassword) {
+      return res.status(400).json({
+        code: "error",
+        message: "Your current password is incorrected!"
+      })
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(String(newPassword), salt);
+
+    await AccountAdmin.updateOne({
+      _id: req.admin.id,
+      deleted: false
+    }, {
+      password: hash
+    });
+
+    res.clearCookie("refreshToken").json({
+      code: "success",
+      message: "Your account password has been changed!"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
 export const create = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if (!permission.includes(rolePermission.accountAdminCreate)) {

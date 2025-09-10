@@ -35,4 +35,6 @@ route.get("/trash/list", middleware.verifyAccount, accountAdminController.trashL
 route.patch("/trash/restore/:id", middleware.verifyAccount, accountAdminController.trashRestore);
 
 route.delete("/trash/delete/:id", middleware.verifyAccount, accountAdminController.trashDelete);
+
+route.patch("/change/password", middleware.verifyAccount, accountAdminController.forgotPassword);
 export default route;
