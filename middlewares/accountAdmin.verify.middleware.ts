@@ -6,8 +6,8 @@ import { Role } from "../models/role.model";
 
 export const verifyAccount = async (req: admin, res: Response, next: NextFunction) => {
   try {
-    const accessToken = req.headers.authorization;
-    const verifyToken = jwt.verify(String(accessToken), String(process.env.JWT_ACCESS_TOKEN)) as JwtPayload;
+    const token = req.cookies.refreshToken;
+    const verifyToken = jwt.verify(String(token), String(process.env.JWT_REFRESH_TOKEN)) as JwtPayload;
     const check = await AccountAdmin.findOne({
       email: verifyToken.email,
       deleted: false,
@@ -50,6 +50,7 @@ export const verifyAccount = async (req: admin, res: Response, next: NextFunctio
 
     next();
   } catch (error) {
+    console.log(error);
     res.json({
       code: "error",
       message: "Token invalid!"

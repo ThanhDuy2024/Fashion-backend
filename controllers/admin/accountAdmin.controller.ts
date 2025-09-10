@@ -63,13 +63,6 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  const accessToken = jwt.sign({
-    fullName: check.fullName,
-    email: check.email
-  }, String(process.env.JWT_ACCESS_TOKEN), {
-    expiresIn: "5h"
-  });
-
   const refreshToken = jwt.sign({
     fullName: check.fullName,
     email: check.email
@@ -86,7 +79,6 @@ export const login = async (req: Request, res: Response) => {
   res.json({
     code: "success",
     message: "Login has been completed!",
-    accessToken: accessToken,
   })
 }
 
