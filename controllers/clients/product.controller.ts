@@ -97,3 +97,64 @@ export const getAllProduct = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const getProductDeatail = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const item = await Product.findOne({
+      _id: id,
+      deleted: false,
+      status: "active",
+    });
+
+    if (!item) {
+      return res.status(404).json({
+        code: "error",
+        message: "Product is not found!"
+      });
+    }
+
+    const finalData: any = {
+      id: item.id,
+      name: item.name,
+      image: item.image || "",
+      categoryIds: item.categoryIds,
+      sex: item.sex,
+      styleName: "",
+      season: item.season,
+      size: item.size,
+      material: item.material,
+      quantity: item.quantity,
+      originPrice: item.originPrice,
+      currentPrice: item.currentPrice,
+      orginOfProduction: item.orginOfProduction,
+    };
+
+    finalData.originPriceFormat = finalData.originPrice.toLocaleString("vi-VN");
+    finalData.currentPriceFormat = finalData.currentPrice.toLocaleString("vi-VN");
+
+    if (item.styleId) {
+      const check = await Style.findOne({
+        _id: item.styleId,
+        deleted: false,
+        status: "active",
+      });
+
+      if (check) {
+        finalData.styleName = check.name;
+      }
+    }
+
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({
+      code: "error",
+      message: error
+    })
+  }
+}
