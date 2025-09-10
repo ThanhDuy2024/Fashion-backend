@@ -5,6 +5,8 @@ import categoryTree from "../../helpers/category.helper";
 import { getAllChildrenCategory } from "../../helpers/category.helper";
 import { Product } from "../../models/product.model";
 import { Style } from "../../models/style.model";
+import { paginationCLient } from "../../helpers/pagination.helper";
+import slugify from "slugify";
 
 export const categoriesTree = async (req: Request, res: Response) => {
 
@@ -70,11 +72,42 @@ export const getProductInCategory = async (req: Request, res: Response) => {
       status: "active"
     }
 
-    const sort: any = {
+    const { search, page, price, quantity } = req.query;
 
+    //sort follow createAt
+    const sort: any = {}
+
+    if (price && (price === "desc" || price == "asc")) {
+      sort.currentPrice = price;
     }
 
-    const product = await Product.find(find).sort(sort);
+    if (quantity && (quantity == "desc" || quantity == "asc")) {
+      sort.quantity = quantity;
+    }
+
+    sort.createdAt = "desc"
+    //end sort follow createAt
+
+    //search
+    if (search) {
+      const keyword = slugify(String(search), {
+        lower: true
+      });
+
+      const regex = new RegExp(keyword);
+
+      find.slug = regex;
+    }
+    //end search
+
+    let pageNumber:number = 1;
+    if(page) {
+      pageNumber = parseInt(String(page));
+    }
+    const countDocuments = await Product.countDocuments(find);
+    const pagination = paginationCLient(countDocuments, pageNumber);
+
+    const product = await Product.find(find).sort(sort).limit(pagination.limit).skip(pagination.skip);
 
     const finalData: any = [];
 
@@ -115,6 +148,7 @@ export const getProductInCategory = async (req: Request, res: Response) => {
     res.json({
       code: "success",
       data: finalData,
+      totalPage: pagination.totalPage
     });
 
   } catch (error) {
