@@ -127,3 +127,19 @@ export const login = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("userToken");
+    res.json({
+      code: "success",
+      message: "Logout completed!"
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({
+      code: "error",
+      message: error
+    })
+  }
+}
