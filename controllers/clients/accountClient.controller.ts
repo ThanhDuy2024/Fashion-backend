@@ -40,3 +40,39 @@ export const register = async (req: Request, res: Response) => {
     });
   }
 }
+
+export const confirmEmail = async (req: Request, res: Response) => {
+  try {
+    const otpCheck = await OtpEmail.findOne({
+      otp: req.body.otp
+    });
+
+    if(!otpCheck) {
+      return res.status(404).json({
+        code: "error",
+        message: "Your otp is not found!"
+      });
+    }
+
+    await AccountClient.create({
+      fullName: otpCheck.fullName,
+      email: otpCheck.email,
+      password: otpCheck.password
+    });
+
+    await OtpEmail.deleteOne({
+      otp: req.body.otp
+    });
+
+    res.json({
+      code: "success",
+      message: "Your account has been registered!"
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    });
+  }
+}

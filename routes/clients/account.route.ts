@@ -4,4 +4,6 @@ const route = Router();
 
 route.post('/register', accountController.register);
 
+route.post('/confirm/email', accountController.confirmEmail);
+
 export default route;
