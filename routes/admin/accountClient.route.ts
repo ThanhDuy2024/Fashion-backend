@@ -4,4 +4,6 @@ const route = Router();
 
 route.get('/list', userController.getAllAccountClient);
 
+route.patch('/edit/:id', userController.updateAccountClient);
+
 export default route;
