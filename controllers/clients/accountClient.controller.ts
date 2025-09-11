@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import { AccountClient } from "../../models/accountClient.model";
 import bcrypt from "bcryptjs";
 import { OtpEmail } from "../../models/otpEmail.model";
-import { randomString } from "../../helpers/randomString";
+import { randomString } from "../../helpers/randomString.helper";
+import { sendOtp } from "../../helpers/nodemailer.helper";
 export const register = async (req: Request, res: Response) => {
   try {
     const {email, password} = req.body;
@@ -24,6 +25,8 @@ export const register = async (req: Request, res: Response) => {
     req.body.expireAt = new Date(Date.now() + 5 * 60 * 1000);
     req.body.otp = randomString(10);
     await OtpEmail.create(req.body);
+
+    sendOtp(req.body.email, req.body.otp);
 
     res.json({
       code: "success",
