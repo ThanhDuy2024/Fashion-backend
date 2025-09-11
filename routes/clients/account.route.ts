@@ -20,5 +20,5 @@ route.post('/logout', middleware.verify, accountController.logout);
 
 route.get('/profile', middleware.verify, accountController.profile);
 
-route.patch('/profile/edit', middleware.verify, upload.single("image"), accountController.updateProfile);
+route.patch('/profile/edit', middleware.verify, upload.single("image"), validate.profileClientValidate, accountController.updateProfile);
 export default route;
