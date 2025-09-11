@@ -16,7 +16,7 @@ route.post('/confirm/email', accountController.confirmEmail);
 
 route.post('/login', validate.loginValidate, accountController.login);
 
-route.post('/logout', accountController.logout);
+route.post('/logout', middleware.verify, accountController.logout);
 
 route.get('/profile', middleware.verify, accountController.profile);
 

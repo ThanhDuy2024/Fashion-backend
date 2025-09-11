@@ -6,6 +6,7 @@ import roleRoute from "./role.route";
 import styleRoute from "./style.route";
 import couponRoute from "./coupon.route";
 import productRoute from "./product.route";
+import userRoute from "./accountClient.route";
 const route = Router();
 
 route.use('/account', accountAdminRoute);
@@ -20,4 +21,5 @@ route.use('/coupon', middleware.verifyAccount, couponRoute);
 
 route.use('/product', middleware.verifyAccount, productRoute);
 
+route.use('/account/user', middleware.verifyAccount, userRoute);
 export default route;
