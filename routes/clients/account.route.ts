@@ -6,4 +6,5 @@ route.post('/register', accountController.register);
 
 route.post('/confirm/email', accountController.confirmEmail);
 
+route.post('/login', accountController.login);
 export default route;

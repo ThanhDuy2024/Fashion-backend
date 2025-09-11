@@ -4,15 +4,17 @@ import bcrypt from "bcryptjs";
 import { OtpEmail } from "../../models/otpEmail.model";
 import { randomString } from "../../helpers/randomString.helper";
 import { sendOtp } from "../../helpers/nodemailer.helper";
+import jwt from "jsonwebtoken";
+
 export const register = async (req: Request, res: Response) => {
   try {
-    const {email, password} = req.body;
-    
+    const { email, password } = req.body;
+
     const checkEmail = await AccountClient.findOne({
       email: email,
     });
 
-    if(checkEmail) {
+    if (checkEmail) {
       return res.status(400).json({
         code: "error",
         message: "Your email has been existed!"
@@ -47,7 +49,7 @@ export const confirmEmail = async (req: Request, res: Response) => {
       otp: req.body.otp
     });
 
-    if(!otpCheck) {
+    if (!otpCheck) {
       return res.status(404).json({
         code: "error",
         message: "Your otp is not found!"
@@ -74,5 +76,54 @@ export const confirmEmail = async (req: Request, res: Response) => {
       code: "error",
       message: error
     });
+  }
+}
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const checkEmail = await AccountClient.findOne({
+      email: email,
+      deleted: false,
+      status: "active"
+    });
+
+    if (!checkEmail) {
+      return res.status(404).json({
+        code: "error",
+        messgae: "Your email is not found!"
+      });
+    };
+
+    const checkPassword = bcrypt.compareSync(password, String(checkEmail.password));
+
+    if (!checkPassword) {
+      return res.status(404).json({
+        code: "error",
+        messgae: "Your password is incorrected!!"
+      });
+    };
+
+    const token = jwt.sign({ fullName: checkEmail.fullName, email: checkEmail.email }, String(process.env.JWT_USER_TOKEN), {
+      expiresIn: "30d"
+    });
+
+    res.cookie("userToken", token, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      secure: false,
+      sameSite: "lax"
+    })
+    res.json({
+      code: "success",
+      message: "Login is completed"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      messgae: error
+    })
   }
 }
