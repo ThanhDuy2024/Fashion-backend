@@ -159,3 +159,42 @@ export const profile = async (req: client, res: Response) => {
     })
   }
 }
+
+export const updateProfile = async (req: client, res: Response) => {
+  try {
+    const account = await AccountClient.findOne({
+      _id: { $ne: req.client.id },
+      email: req.body.email,
+    });
+
+    if(account) {
+      return res.status(400).json({
+        code: "error",
+        message: "Your email has been existed or banned!"
+      });
+    };
+
+    if(req.file) {
+      req.body.image = req.file.path;
+    } else {
+      delete req.body.image;
+    };
+
+    await AccountClient.updateOne({
+      _id: req.client.id,
+      deleted: false,
+      status: "active"
+    }, req.body);
+
+    res.json({
+      code: "success",
+      message: "Profile has been updated!"
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}

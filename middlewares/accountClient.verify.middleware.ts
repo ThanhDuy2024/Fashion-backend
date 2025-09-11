@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { AccountClient } from "../models/accountClient.model";
 import { client } from "../interface/client.interface";
@@ -28,6 +28,7 @@ export const verify = async (req: client, res: Response, next: NextFunction) => 
     };
 
     const finalData:any = {
+      id: account.id,
       fullName: account.fullName,
       email: account.email,
       image: account.image || "",
@@ -38,7 +39,6 @@ export const verify = async (req: client, res: Response, next: NextFunction) => 
     }
 
     req.client = finalData;
-    console.log(req.client);
     next();
   } catch (error) {
     console.log(error);
