@@ -5,6 +5,7 @@ import { OtpEmail } from "../../models/otpEmail.model";
 import { randomString } from "../../helpers/randomString.helper";
 import { sendOtp } from "../../helpers/nodemailer.helper";
 import jwt from "jsonwebtoken";
+import { client } from "../../interface/client.interface";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -134,6 +135,21 @@ export const logout = async (req: Request, res: Response) => {
     res.json({
       code: "success",
       message: "Logout completed!"
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const profile = async (req: client, res: Response) => {
+  try {
+    res.json({
+      code: "success",
+      data: req.client
     })
   } catch (error) {
     console.error(error);

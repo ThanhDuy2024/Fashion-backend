@@ -24,6 +24,12 @@ const schema = new Schema({
     type: Boolean,
     default: false
   },
+  image: String,
+  phone: String,
+  address: String,
+  birthDay: String,
+  bankCode: String,
+  
   deletedBy: String,
   deletedAt: Date,
   updatedBy: String,
