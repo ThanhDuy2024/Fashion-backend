@@ -93,7 +93,7 @@ export const login = async (req: Request, res: Response) => {
     if (!checkEmail) {
       return res.status(404).json({
         code: "error",
-        messgae: "Your email is not found!"
+        message: "Your email is not found!"
       });
     };
 
@@ -102,7 +102,7 @@ export const login = async (req: Request, res: Response) => {
     if (!checkPassword) {
       return res.status(404).json({
         code: "error",
-        messgae: "Your password is incorrected!!"
+        message: "Your password is incorrected!!"
       });
     };
 
@@ -124,7 +124,7 @@ export const login = async (req: Request, res: Response) => {
     console.log(error);
     res.status(400).json({
       code: "error",
-      messgae: error
+      message: error
     })
   }
 }
