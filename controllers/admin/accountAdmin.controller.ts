@@ -237,6 +237,14 @@ export const forgotPassword = async (req: admin, res: Response) => {
   }
 }
 
+export const logout = async (req: admin, res: Response) => {
+  res.clearCookie("refreshToken");
+  res.json({
+    code: "success",
+    message: "Account has been logout!"
+  });
+}
+
 export const create = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if (!permission.includes(rolePermission.accountAdminCreate)) {

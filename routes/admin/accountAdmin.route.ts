@@ -14,6 +14,8 @@ route.post("/register", validate.registerValidate, accountAdminController.regist
 
 route.post("/login", validate.loginValidate, accountAdminController.login);
 
+route.post("/logout", middleware.verifyAccount, accountAdminController.logout);
+
 route.get("/profile", middleware.verifyAccount, accountAdminController.profile);
 
 route.patch('/profile/edit', middleware.verifyAccount, upload.single("image"), validate.profileValidate,accountAdminController.profileEdit);
