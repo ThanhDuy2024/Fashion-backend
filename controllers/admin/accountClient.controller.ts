@@ -126,3 +126,40 @@ export const updateAccountClient = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const deleteAccountClient = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const item = await AccountClient.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if(!item) {
+      return res.status(404).json({
+        code: "error",
+        message: "Account is not found!"
+      })
+    };
+
+    await AccountClient.updateOne({
+      _id: id
+    }, {
+      deleted: true,
+      deletedBy: req.admin.id,
+      deletedAt: Date.now()
+    });
+
+    res.json({
+      code: "success",
+      message: "Account has been deleted!"
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
