@@ -119,8 +119,8 @@ export const getAllOrder = async (req: client, res: Response) => {
 
     const { page } = req.query;
 
-    let pageNumber:number = 1;
-    if(page) {
+    let pageNumber: number = 1;
+    if (page) {
       pageNumber = parseInt(String(page));
     };
     const countDocument = await Order.countDocuments(find);
@@ -139,7 +139,7 @@ export const getAllOrder = async (req: client, res: Response) => {
         createdAt: "",
       }
 
-      if(item.createdAt) {
+      if (item.createdAt) {
         rawData.createdAt = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
       }
 
@@ -157,5 +157,52 @@ export const getAllOrder = async (req: client, res: Response) => {
       code: "error",
       message: error
     });
+  }
+}
+
+export const orderDetail = async (req: client, res: Response) => {
+  try {
+    const { id } = req.params;
+    const item = await Order.findOne({
+      _id: id,
+      userId: req.client.id,
+      deleted: false,
+    });
+
+    if (!item) {
+      return res.status(404).json({
+        code: "error",
+        message: "Order is not found!"
+      });
+    };
+
+    const finalData: any = {
+      id: item.id,
+      address: item.address,
+      phone: item.phone,
+      coupon: item.coupon,
+      discount: item.discount,
+      orderList: item.orderList,
+      totelOrder: item.totalOrder,
+      totalAfterDiscount: item.totalAfterDiscount,
+      paymentStatus: item.paymentStatus,
+      paymentMethod: item.paymentMethod,
+      createdAt: "",
+    };
+
+    if(item.createdAt) {
+      finalData.createdAt = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
+    };
+
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
   }
 }

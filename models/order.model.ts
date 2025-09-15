@@ -38,12 +38,17 @@ const schema = new Schema({
   paymentStatus: {
     type: String,
     default: "unpaid",
-    enum: ["paid", "unpaid", "cancel"]
+    enum: ["paid", "unpaid"]
   },
   paymentMethod: {
     type: String,
     default: "offline",
     enum: ["offline", "zalopay"]
+  },
+  status: {
+    type: String,
+    default: "init",
+    enum: ["init", "InTransit", "complete"]
   },
   deletedBy: String,
   deleted: {
