@@ -5,4 +5,5 @@ const route = Router();
 
 route.post("/create", middleware.verify, orderController.createOrder);
 
+route.get("/list", middleware.verify, orderController.getAllOrder);
 export default route;

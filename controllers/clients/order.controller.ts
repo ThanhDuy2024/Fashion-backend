@@ -3,6 +3,8 @@ import { client } from "../../interface/client.interface";
 import { Product } from "../../models/product.model";
 import { Coupon } from "../../models/coupon.model";
 import { Order } from "../../models/order.model";
+import { paginationCLient } from "../../helpers/pagination.helper";
+import moment from "moment";
 
 export const createOrder = async (req: client, res: Response) => {
   try {
@@ -36,7 +38,7 @@ export const createOrder = async (req: client, res: Response) => {
         deleted: false
       });
 
-      if(order) {
+      if (order) {
         return res.status(400).json({
           code: "error",
           message: "Coupon has been used!"
@@ -84,11 +86,11 @@ export const createOrder = async (req: client, res: Response) => {
       discountPercent = parseFloat(finalData.discount.replace("%", ""));
     }
 
-    const total = finalData.orderList.reduce((sum:any, item:any) => {
+    const total = finalData.orderList.reduce((sum: any, item: any) => {
       return sum + item.price * item.quantity;
     }, 0);
 
-    
+
     let totalAfterDiscount = total - (total * discountPercent / 100);
     finalData.totalOrder = total;
     finalData.totalAfterDiscount = totalAfterDiscount;
@@ -105,5 +107,55 @@ export const createOrder = async (req: client, res: Response) => {
       code: "error",
       message: error
     })
+  }
+}
+
+export const getAllOrder = async (req: client, res: Response) => {
+  try {
+    const find: any = {
+      userId: req.client.id,
+      deleted: false,
+    }
+
+    const { page } = req.query;
+
+    let pageNumber:number = 1;
+    if(page) {
+      pageNumber = parseInt(String(page));
+    };
+    const countDocument = await Order.countDocuments(find);
+    const pagination = paginationCLient(countDocument, pageNumber);
+
+    const orderList = await Order.find(find).sort({ createdAt: "desc" }).skip(pagination.skip).limit(pagination.limit);
+
+    const finalData: any = [];
+
+    for (const item of orderList) {
+      const rawData: any = {
+        id: item.id,
+        orderList: item.orderList,
+        totalAfterDiscount: item.totalAfterDiscount,
+        paymentStatus: item.paymentStatus,
+        createdAt: "",
+      }
+
+      if(item.createdAt) {
+        rawData.createdAt = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
+      }
+
+      finalData.push(rawData);
+    };
+
+    res.json({
+      code: "success",
+      data: finalData,
+      totalPage: pagination.totalPage
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(404).json({
+      code: "error",
+      message: error
+    });
   }
 }
