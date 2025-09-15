@@ -61,4 +61,15 @@ export enum rolePermission {
   accountAdminTrashRestore = "accountAdmin-trash-restore",
   accountAdminTrashDelete = "accountAdmin-trash-delete",
   //end accountAdmin role
+  
+  //accountClient role
+  accountClientCreate = "accountClient-create",
+  accountClientList = "accountClient-list",
+  accountClientDetail = "accountClient-detail",
+  accountClientEdit = "accountClient-edit",
+  accountClientDelete = "accountClient-delete",
+  accountClientTrashList = "accountClient-trash-list",
+  accountClientnTrashRestore = "accountClient-trash-restore",
+  accountClientTrashDelete = "accountClient-trash-delete",
+  //account client role
 }
