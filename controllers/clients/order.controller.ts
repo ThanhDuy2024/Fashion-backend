@@ -68,6 +68,7 @@ export const createOrder = async (req: client, res: Response) => {
       finalData.orderList.push({
         id: product.id,
         name: product.name,
+        image: product.image || "",
         quantity: parseInt(item.quantity),
         size: item.size,
         price: product.currentPrice ? product.currentPrice : product.originPrice,
@@ -197,6 +198,44 @@ export const orderDetail = async (req: client, res: Response) => {
     res.json({
       code: "success",
       data: finalData
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const deleteOrder = async (req: client, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const item = await Order.findOne({
+      _id: id,
+      userId: req.client.id,
+      paymentStatus: "unpaid",
+      deleted: false
+    });
+
+    if(!item) {
+      return res.status(404).json({
+        code: "error",
+        message: "Order is not found!"
+      });
+    }
+
+    await Order.deleteOne({
+      _id: id,
+      userId: req.client.id,
+      paymentStatus: "unpaid",
+      deleted: false
+    });
+
+    res.json({
+      code: "success",
+      message: "The order has been deleted!"
     })
   } catch (error) {
     console.log(error);

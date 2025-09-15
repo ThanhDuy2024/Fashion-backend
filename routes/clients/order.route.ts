@@ -8,4 +8,6 @@ route.post("/create", middleware.verify, orderController.createOrder);
 route.get("/list", middleware.verify, orderController.getAllOrder);
 
 route.get("/detail/:id", middleware.verify, orderController.orderDetail)
+
+route.delete("/delete/:id", middleware.verify, orderController.deleteOrder)
 export default route;
