@@ -176,6 +176,7 @@ export const updateProfile = async (req: client, res: Response) => {
 
     if(req.file) {
       req.body.image = req.file.path;
+      console.error(req.file.path);
     } else {
       delete req.body.image;
     };
