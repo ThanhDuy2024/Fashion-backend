@@ -51,6 +51,7 @@ const schema = new Schema({
     enum: ["init", "inTransit", "complete"]
   },
   deletedBy: String,
+  updatedBy: String,
   deleted: {
     type: Boolean,
     default: false

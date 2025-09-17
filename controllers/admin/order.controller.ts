@@ -1,49 +1,51 @@
 import { Response } from "express";
 import { admin } from "../../interface/admin.interface";
 import { Order } from "../../models/order.model";
-import { paymentStatusVariable, statusVariable } from "../../configs/paymentVariable";
+import { paymentMethodVariable, paymentStatusVariable, statusVariable } from "../../configs/paymentVariable";
 import { pagination } from "../../helpers/pagination.helper";
 import moment from "moment";
+import { AccountClient } from "../../models/accountClient.model";
+import { any } from "joi";
 
 export const getAllOrder = async (req: admin, res: Response) => {
   try {
-    const find:any = {
+    const find: any = {
       deleted: false
     };
 
-    const { search, price, paymentStatus, status, page} = req.query;
+    const { search, price, paymentStatus, status, page } = req.query;
 
-    if(search) {
+    if (search) {
       find._id = search;
     }
 
-    const sort:any = {};
+    const sort: any = {};
 
-    if(price) {
+    if (price) {
       sort.totalAfterDiscount = price;
     };
 
-    if(paymentStatus) {
+    if (paymentStatus) {
       find.paymentStatus = paymentStatus;
     };
 
-    if(status) {
+    if (status) {
       find.status = status;
     };
 
-    let pageNumber:number = 1;
-    if(page) {
+    let pageNumber: number = 1;
+    if (page) {
       pageNumber = parseInt(String(page));
     };
     const countDocument = await Order.countDocuments(find);
-    const paginationFeature = pagination(countDocument, pageNumber); 
+    const paginationFeature = pagination(countDocument, pageNumber);
 
     const order = await Order.find(find).sort(sort).limit(paginationFeature.limit).skip(paginationFeature.skip);
 
-    const finalData:any = []
+    const finalData: any = []
 
     for (const item of order) {
-      const rawData:any = {
+      const rawData: any = {
         id: item.id,
         orderList: item.orderList,
         totalAfterDiscount: item.totalAfterDiscount,
@@ -77,6 +79,92 @@ export const getAllOrder = async (req: admin, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const orderDetail = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const item = await Order.findOne({
+      _id: id,
+      deleted: false
+    });
+
+    if (!item) {
+      return res.status(404).json({
+        code: "error",
+        message: "Order is not found!"
+      });
+    };
+
+    const finalData: any = {
+      _id: item.id,
+      userInfor: {},
+      address: item.address,
+      phone: item.phone,
+      orderList: item.orderList,
+      coupon: item.coupon,
+      discount: item.discount,
+      totalOrder: item.totalOrder,
+      totalAfterDiscount: item.totalAfterDiscount,
+      paymentStatus: {},
+      paymentMethod: {},
+      status: {},
+      createdAt: "",
+      updatedAt: "",
+      __v: 0
+    }
+
+    if(item.paymentStatus) {
+      const findItem = paymentStatusVariable.find(v => v.key === item.paymentStatus);
+      finalData.paymentStatus = findItem;
+    }
+
+    if(item.paymentMethod) {
+      const findItem = paymentMethodVariable.find(v => v.key === item.paymentMethod);
+      finalData.paymentMethod = findItem;
+    }
+
+    if(item.status) {
+      const findItem = statusVariable.find(v => v.key === item.status);
+      finalData.status = findItem;
+    }
+
+    if(item.createdAt) {
+      finalData.createdAt = moment(item.createdAt).format("HH:m DD/MM/YYYY");
+    };
+
+    if(item.updatedAt) {
+      finalData.updatedAt = moment(item.updatedAt).format("HH:m DD/MM/YYYY");
+    };
+
+    if(item.userId) {
+      const account = await AccountClient.findOne({
+        _id: item.userId,
+        deleted: false
+      });
+
+      if(account) {
+        finalData.userInfor = {
+          id: account.id,
+          name: account.fullName,
+          email: account.email
+        }
+      } else {
+        finalData.userInfor = "Not data"
+      }
+    }
+    res.json({
+      code: "success",
+      data: finalData
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({
       code: "error",
       message: error
     })
