@@ -4,8 +4,16 @@ import { AccountClient } from "../../models/accountClient.model";
 import moment from "moment";
 import { pagination } from "../../helpers/pagination.helper";
 import { AccountAdmin } from "../../models/accountAdmin.model";
+import { rolePermission } from "../../enums/permission";
 
 export const getAllAccountClient = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.accountClientList)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account has not been permitted in feature!"
+    });
+  }
   try {
     const find: any = {
       deleted: false,
@@ -74,6 +82,14 @@ export const getAllAccountClient = async (req: admin, res: Response) => {
 }
 
 export const updateAccountClient = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.accountClientEdit)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account has not been permitted in feature!"
+    });
+  };
+
   try {
     const { id } = req.params;
     const { status } = req.query;
@@ -128,6 +144,14 @@ export const updateAccountClient = async (req: admin, res: Response) => {
 }
 
 export const deleteAccountClient = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.accountClientDelete)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account has not been permitted in feature!"
+    });
+  };
+
   try {
     const { id } = req.params;
 
@@ -165,6 +189,14 @@ export const deleteAccountClient = async (req: admin, res: Response) => {
 }
 
 export const getAllTrashAccountClient = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.accountClientTrashList)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account has not been permitted in feature!"
+    });
+  };
+
   try {
     const find: any = {
       deleted: true,
@@ -234,6 +266,13 @@ export const getAllTrashAccountClient = async (req: admin, res: Response) => {
 }
 
 export const trashRestore = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.accountClientnTrashRestore)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account has not been permitted in feature!"
+    });
+  }
   try {
     const { id } = req.params;
 
@@ -272,6 +311,13 @@ export const trashRestore = async (req: admin, res: Response) => {
 }
 
 export const trashDelete = async (req: admin, res: Response) => {
+  const { permission } = req.admin;
+  if(!permission.includes(rolePermission.accountClientTrashDelete)) {
+    return res.status(401).json({
+      code: "error",
+      message: "Account has not been permitted in feature!"
+    });
+  }
   try {
     const { id } = req.params;
 

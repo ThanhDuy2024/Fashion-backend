@@ -63,7 +63,6 @@ export enum rolePermission {
   //end accountAdmin role
   
   //accountClient role
-  accountClientCreate = "accountClient-create",
   accountClientList = "accountClient-list",
   accountClientDetail = "accountClient-detail",
   accountClientEdit = "accountClient-edit",
