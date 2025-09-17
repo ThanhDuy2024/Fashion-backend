@@ -5,6 +5,7 @@ import { Coupon } from "../../models/coupon.model";
 import { Order } from "../../models/order.model";
 import { paginationCLient } from "../../helpers/pagination.helper";
 import moment from "moment";
+import { paymentStatusVariable, statusVariable } from "../../configs/paymentVariable";
 
 export const createOrder = async (req: client, res: Response) => {
   try {
@@ -136,7 +137,8 @@ export const getAllOrder = async (req: client, res: Response) => {
         id: item.id,
         orderList: item.orderList,
         totalAfterDiscount: item.totalAfterDiscount,
-        paymentStatus: item.paymentStatus,
+        paymentStatus: "",
+        status: "",
         createdAt: "",
       }
 
@@ -144,6 +146,15 @@ export const getAllOrder = async (req: client, res: Response) => {
         rawData.createdAt = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
       }
 
+      if (item.paymentStatus) {
+        const findItem = paymentStatusVariable.find(v => v.key === item.paymentStatus);
+        rawData.paymentStatus = findItem;
+      };
+
+      if (item.status) {
+        const findItem = statusVariable.find(v => v.key === item.status);
+        rawData.status = findItem;
+      };
       finalData.push(rawData);
     };
 
@@ -191,7 +202,7 @@ export const orderDetail = async (req: client, res: Response) => {
       createdAt: "",
     };
 
-    if(item.createdAt) {
+    if (item.createdAt) {
       finalData.createdAt = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
     };
 
@@ -219,7 +230,7 @@ export const deleteOrder = async (req: client, res: Response) => {
       deleted: false
     });
 
-    if(!item) {
+    if (!item) {
       return res.status(404).json({
         code: "error",
         message: "Order is not found!"

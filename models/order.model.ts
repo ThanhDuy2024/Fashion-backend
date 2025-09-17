@@ -48,7 +48,7 @@ const schema = new Schema({
   status: {
     type: String,
     default: "init",
-    enum: ["init", "InTransit", "complete"]
+    enum: ["init", "inTransit", "complete"]
   },
   deletedBy: String,
   deleted: {
