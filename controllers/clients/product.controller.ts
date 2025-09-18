@@ -3,6 +3,7 @@ import slugify from "slugify";
 import { Product } from "../../models/product.model";
 import { paginationCLient } from "../../helpers/pagination.helper";
 import { Style } from "../../models/style.model";
+import { Categories } from "../../models/categories.model";
 
 export const getAllProduct = async (req: Request, res: Response) => {
   try {
@@ -55,32 +56,12 @@ export const getAllProduct = async (req: Request, res: Response) => {
         id: item.id,
         name: item.name,
         image: item.image || "",
-        categoryIds: item.categoryIds,
-        sex: item.sex,
-        styleName: "",
-        season: item.season,
-        size: item.size,
-        material: item.material,
-        quantity: item.quantity,
         originPrice: item.originPrice,
         currentPrice: item.currentPrice,
-        orginOfProduction: item.orginOfProduction,
       };
 
       rawData.originPriceFormat = rawData.originPrice.toLocaleString("vi-VN");
       rawData.currentPriceFormat = rawData.currentPrice.toLocaleString("vi-VN");
-
-      if (item.styleId) {
-        const check = await Style.findOne({
-          _id: item.styleId,
-          deleted: false,
-          status: "active",
-        });
-
-        if (check) {
-          rawData.styleName = check.name;
-        }
-      }
 
       finalData.push(rawData);
     }
@@ -119,7 +100,7 @@ export const getProductDeatail = async (req: Request, res: Response) => {
       id: item.id,
       name: item.name,
       image: item.image || "",
-      categoryIds: item.categoryIds,
+      categoryIds: [],
       sex: item.sex,
       styleName: "",
       season: item.season,
@@ -145,6 +126,23 @@ export const getProductDeatail = async (req: Request, res: Response) => {
         finalData.styleName = check.name;
       }
     }
+    
+    if(item.categoryIds) {
+      for (const c of item.categoryIds) {
+        const check = await Categories.findOne({
+          _id: c,
+          deleted: false,
+          status: "active"
+        });
+
+        if(check) {
+          finalData.categoryIds.push({
+            id: check.id,
+            name: check.name
+          });
+        }
+      }
+    };
 
     res.json({
       code: "success",
