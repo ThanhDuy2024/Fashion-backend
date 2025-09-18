@@ -5,4 +5,6 @@ const route = Router();
 route.get('/list', orderController.getAllOrder);
 
 route.get('/detail/:id', orderController.orderDetail);
+
+route.patch('/edit/:id', orderController.updateOrder);
 export default route;

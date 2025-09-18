@@ -5,7 +5,6 @@ import { paymentMethodVariable, paymentStatusVariable, statusVariable } from "..
 import { pagination } from "../../helpers/pagination.helper";
 import moment from "moment";
 import { AccountClient } from "../../models/accountClient.model";
-import { any } from "joi";
 
 export const getAllOrder = async (req: admin, res: Response) => {
   try {
@@ -165,6 +164,56 @@ export const orderDetail = async (req: admin, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(404).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const updateOrder = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const item = await Order.findOne({
+      _id: id,
+      deleted: false,
+    });
+
+    if(!item) {
+      return res.status(404).json({
+        code: "error",
+        message: "Order is not found!"
+        });
+    };
+
+    const { paymentStatus, status } = req.query;
+
+    if(paymentStatus) {
+      await Order.updateOne({
+        _id: id,
+      }, {
+        paymentStatus: paymentStatus,
+        updatedBy: req.admin.id,
+      })
+    };
+
+    if(status) {
+      await Order.updateOne({
+        _id: id
+      }, {
+        status: status,
+        updatedBy: req.admin.id
+      });
+    };
+
+
+    res.json({
+      code: "success",
+      message: "Order has been updated!"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
       code: "error",
       message: error
     })
