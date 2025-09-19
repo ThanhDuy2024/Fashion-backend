@@ -6,6 +6,7 @@ import { randomString } from "../../helpers/randomString.helper";
 import { sendOtp } from "../../helpers/nodemailer.helper";
 import jwt from "jsonwebtoken";
 import { client } from "../../interface/client.interface";
+import { htmlCheckEmail } from "../../helpers/htmlContext.helper";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -29,7 +30,8 @@ export const register = async (req: Request, res: Response) => {
     req.body.otp = randomString(10);
     await OtpEmail.create(req.body);
 
-    sendOtp(req.body.email, req.body.otp);
+    const html = htmlCheckEmail(req.body.otp);
+    sendOtp(req.body.email, html);
 
     res.json({
       code: "success",
