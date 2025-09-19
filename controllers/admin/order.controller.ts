@@ -15,7 +15,7 @@ export const getAllOrder = async (req: admin, res: Response) => {
     const { search, price, paymentStatus, status, page } = req.query;
 
     if (search) {
-      find._id = search;
+      find.email = search;
     }
 
     const sort: any = {};

@@ -1,8 +1,6 @@
-import { htmlCheckEmail } from "./htmlContext.helper";
-
 const nodemailer = require('nodemailer');
 
-export const sendOtp = (emailUser:string, html:any) => {
+export const sendEmail = (emailUser:string, html:any, subject:string) => {
   // Create a transporter object
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -18,7 +16,7 @@ export const sendOtp = (emailUser:string, html:any) => {
   const mailOptions = {
     from: String(process.env.APP_EMAIL),
     to: emailUser,
-    subject: 'OTP confirm your email',
+    subject: subject,
     html: html
   };
 

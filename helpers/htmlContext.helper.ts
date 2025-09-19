@@ -20,4 +20,30 @@ export const htmlCheckEmail = (otp: string) => {
   </div>
 `;
   return htmlContent;
+};
+
+export const htmlCreatedOrder = (name: string, orderId: string, orderDate: string, total: string) => {
+  const htmlContent = `<body style="font-family: Arial, sans-serif; color: #333;">
+    <div style="padding: 16px; border: 1px solid #eee; border-radius: 6px; max-width: 600px; margin: auto;">
+      <div style="margin-bottom: 16px;">
+        <h2 style="color: #2563eb; margin: 0;">Đặt hàng thành công!</h2>
+        <p style="margin: 8px 0 0;">Xin chào <strong>${name}</strong>,</p>
+        <p style="margin: 4px 0 0;">Cảm ơn bạn đã mua hàng tại <strong>Fahsion shop</strong>.</p>
+      </div>
+
+      <div style="margin-bottom: 16px; padding: 12px; background: #f9fafb; border-radius: 4px;">
+        <div><strong>Mã đơn hàng:</strong>${orderId}</div>
+        <div><strong>Ngày đặt:</strong>${orderDate}</div>
+        <div><strong>Tổng tiền:</strong>${total}}</div>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <a href="{{orderUrl}}" 
+           style="display:inline-block; padding: 10px 16px; background:#2563eb; color:#fff cursor-pointer; text-decoration:none; border-radius:4px;">
+          Xem đơn hàng
+        </a>
+      </div>
+    </div>
+  </body>`;
+  return htmlContent;
 }

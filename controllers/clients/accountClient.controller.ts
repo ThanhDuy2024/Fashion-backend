@@ -3,7 +3,7 @@ import { AccountClient } from "../../models/accountClient.model";
 import bcrypt from "bcryptjs";
 import { OtpEmail } from "../../models/otpEmail.model";
 import { randomString } from "../../helpers/randomString.helper";
-import { sendOtp } from "../../helpers/nodemailer.helper";
+import { sendEmail } from "../../helpers/nodemailer.helper";
 import jwt from "jsonwebtoken";
 import { client } from "../../interface/client.interface";
 import { htmlCheckEmail } from "../../helpers/htmlContext.helper";
@@ -31,7 +31,8 @@ export const register = async (req: Request, res: Response) => {
     await OtpEmail.create(req.body);
 
     const html = htmlCheckEmail(req.body.otp);
-    sendOtp(req.body.email, html);
+    const subject = 'OTP confirm your email'
+    sendEmail(req.body.email, html, subject);
 
     res.json({
       code: "success",

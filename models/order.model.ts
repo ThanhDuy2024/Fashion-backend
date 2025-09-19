@@ -1,28 +1,22 @@
 import mongoose from "mongoose";
-const slug = require("mongoose-slug-updater");
-mongoose.plugin(slug);
 const { Schema } = mongoose;
 
 const schema = new Schema({
   userId: {
     type: String,
-    require: true
   },
+  email: String,
   address: {
     type: String,
-    require: true
   },
   phone: {
     type: String,
-    require: true
   },
   orderList: {
     type: Array,
-    require: true,
   },
   coupon: {
     type: String,
-    require: true
   },
   discount: {
     type: String,
@@ -56,11 +50,6 @@ const schema = new Schema({
     type: Boolean,
     default: false
   },
-  slug: {
-    type: String,
-    slug: "name",
-    unique: true
-  }
 }, {
   timestamps: true
 });

@@ -6,12 +6,15 @@ import { Order } from "../../models/order.model";
 import { paginationCLient } from "../../helpers/pagination.helper";
 import moment from "moment";
 import { paymentStatusVariable, statusVariable } from "../../configs/paymentVariable";
+import { htmlCreatedOrder } from "../../helpers/htmlContext.helper";
+import { sendEmail } from "../../helpers/nodemailer.helper";
 
 export const createOrder = async (req: client, res: Response) => {
   try {
 
     const finalData: any = {
       userId: req.client.id,
+      email: req.client.email,
       address: req.client.address,
       phone: req.client.phone,
       orderList: [],
@@ -19,6 +22,13 @@ export const createOrder = async (req: client, res: Response) => {
       discount: "",
       paymentMethod: req.body.paymentMethod
     };
+
+    if(!finalData.address && !finalData.phone) {
+      return res.status(400).json({
+        code: "error",
+        message: "you have not updated phone and address!"
+      });
+    }
 
     if (req.body.coupon) {
       const coupon = await Coupon.findOne({
@@ -97,7 +107,14 @@ export const createOrder = async (req: client, res: Response) => {
     finalData.totalOrder = total;
     finalData.totalAfterDiscount = totalAfterDiscount;
 
-    await Order.create(finalData);
+    const result = await Order.create(finalData);
+
+    const date = moment(result.createdAt).format("HH:mm DD/MM/YYYY");
+
+    const html = htmlCreatedOrder(req.client.fullName, result.id, date, result.totalAfterDiscount.toLocaleString("vi-VN"));
+
+    const subject = "Create order complete!";
+    sendEmail(req.client.email, html, subject);
 
     res.json({
       code: "success",
