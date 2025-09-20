@@ -5,6 +5,8 @@ import { paginationCLient } from "../../helpers/pagination.helper";
 import { Style } from "../../models/style.model";
 import { Categories } from "../../models/categories.model";
 
+const skip = 0;
+const limit = 4;
 export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const find: any = {
@@ -45,7 +47,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
       pageNumber = parseInt(String(page));
     }
     const countDocuments = await Product.countDocuments(find);
-    const pagination = paginationCLient(countDocuments, pageNumber);
+    const pagination = paginationCLient(countDocuments, pageNumber, skip, limit);
 
     const product = await Product.find(find).sort(sort).limit(pagination.limit).skip(pagination.skip);
 
