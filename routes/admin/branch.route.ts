@@ -11,4 +11,6 @@ const upload = multer({
 route.post("/create", upload.single("image"), branchController.createBranch);
 
 route.get('/list', branchController.getAllBranch);
+
+route.get('/detail/:id', branchController.branchDetail);
 export default route;
