@@ -6,6 +6,7 @@ const schema = new Schema({
   name: String,
   image: String,
   address: String,
+  phone: String,
   status: String,
   createdBy: String,
   updatedBy: String,
