@@ -8,6 +8,7 @@ import couponRoute from "./coupon.route";
 import productRoute from "./product.route";
 import userRoute from "./accountClient.route";
 import orderRoute from "./order.route";
+import branchRoute from "./branch.route";
 const route = Router();
 
 route.use('/account', accountAdminRoute);
@@ -25,4 +26,6 @@ route.use('/product', middleware.verifyAccount, productRoute);
 route.use('/account/user', middleware.verifyAccount, userRoute);
 
 route.use('/order', middleware.verifyAccount, orderRoute);
+
+route.use('/branch', middleware.verifyAccount, branchRoute);
 export default route;
