@@ -14,4 +14,6 @@ route.post("/create", upload.single("image"), branchValidate, branchController.c
 route.get('/list', branchController.getAllBranch);
 
 route.get('/detail/:id', branchController.branchDetail);
+
+route.patch('/edit/:id', upload.single("image"), branchController.updateBranch);
 export default route;
