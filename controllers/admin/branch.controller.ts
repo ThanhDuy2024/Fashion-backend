@@ -189,7 +189,7 @@ export const updateBranch = async (req: admin, res: Response) => {
     }
 
     req.body.updatedBy = req.admin.id;
-    
+
     await Branch.updateOne({
       _id: id
     }, req.body);
@@ -197,6 +197,34 @@ export const updateBranch = async (req: admin, res: Response) => {
     res.json({
       code: "success",
       message: "Branch has been updated!"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
+export const deleteBranch = async (req: admin, res: Response) => {
+  try {
+    const { id } = req.params;
+    const check = await Branch.findById(id);
+    if(!check) {
+      return res.status(404).json({
+        code: "error",
+        message: "Branch is not found!"
+      });
+    };
+
+    await Branch.deleteOne({
+      _id: id
+    });
+    
+    res.json({
+      code: "success",
+      message: "Branch has been deleted!"
     })
   } catch (error) {
     console.log(error);

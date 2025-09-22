@@ -15,5 +15,7 @@ route.get('/list', branchController.getAllBranch);
 
 route.get('/detail/:id', branchController.branchDetail);
 
-route.patch('/edit/:id', upload.single("image"), branchController.updateBranch);
+route.patch('/edit/:id', upload.single("image"), branchValidate, branchController.updateBranch);
+
+route.delete('/delete/:id', branchController.deleteBranch);
 export default route;
