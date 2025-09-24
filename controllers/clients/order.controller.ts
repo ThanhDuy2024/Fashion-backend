@@ -189,6 +189,21 @@ export const getAllOrder = async (req: client, res: Response) => {
   }
 }
 
+export const orderZaloPay = async (req: client, res: Response) => {
+  try {
+    res.json({
+      code: "success",
+      message: "Buy success",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
 export const orderDetail = async (req: client, res: Response) => {
   try {
     const { id } = req.params;
