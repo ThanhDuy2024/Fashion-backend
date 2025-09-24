@@ -11,7 +11,8 @@ export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const find: any = {
       deleted: false,
-      status: "active"
+      status: "active",
+      quantity: { $gte: 1}
     }
 
     const { search, page, price, quantity } = req.query;

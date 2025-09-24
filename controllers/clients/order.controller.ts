@@ -72,7 +72,7 @@ export const createOrder = async (req: client, res: Response) => {
       if (!product) {
         return res.status(404).json({
           code: "error",
-          message: `The product name ${item.name} is sold out or not enough quantity!`
+          message: `Sản phẩm ${item.name} đã hết hàng, quý khách vui lòng xóa sản phẩm khỏi giỏ hàng trước khi thanh toán!`
         });
       }
 
@@ -85,11 +85,12 @@ export const createOrder = async (req: client, res: Response) => {
         price: product.currentPrice ? product.currentPrice : product.originPrice,
       });
 
-      await Product.updateOne({
+      const p = await Product.updateOne({
         _id: product.id
       }, {
         quantity: Number(product.quantity) - item.quantity
       });
+      console.log(p);
     }
 
     // Xử lý giảm giá
@@ -118,7 +119,8 @@ export const createOrder = async (req: client, res: Response) => {
 
     res.json({
       code: "success",
-      message: "Order has been created!"
+      message: "Order has been created!",
+      data: req.body.paymentMethod,
     });
   } catch (error) {
     console.log(error);
