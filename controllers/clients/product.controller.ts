@@ -12,7 +12,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
     const find: any = {
       deleted: false,
       status: "active",
-      quantity: { $gte: 1}
+      quantity: { $gte: 1 }
     }
 
     const { search, page, price, quantity } = req.query;
@@ -31,14 +31,10 @@ export const getAllProduct = async (req: Request, res: Response) => {
     sort.createdAt = "desc"
     //end sort follow createAt
 
-    //search
-    if (search) {
-      const keyword = slugify(String(search), {
-        lower: true
-      });
-
+    // Check nếu search tồn tại, khác rỗng, và khác với "" hoặc '""'
+    if (search && String(search).trim() !== "" && String(search).trim() !== '""') {
+      const keyword = slugify(String(search), { lower: true });
       const regex = new RegExp(keyword);
-
       find.slug = regex;
     }
     //end search
@@ -129,8 +125,8 @@ export const getProductDeatail = async (req: Request, res: Response) => {
         finalData.styleName = check.name;
       }
     }
-    
-    if(item.categoryIds) {
+
+    if (item.categoryIds) {
       for (const c of item.categoryIds) {
         const check = await Categories.findOne({
           _id: c,
@@ -138,7 +134,7 @@ export const getProductDeatail = async (req: Request, res: Response) => {
           status: "active"
         });
 
-        if(check) {
+        if (check) {
           finalData.categoryIds.push({
             id: check.id,
             name: check.name
