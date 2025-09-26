@@ -137,8 +137,32 @@ export const categoryList = async (req: admin, res: Response) => {
       status: item.status,
       createdAtFormat: "",
       updatedAtFormat: "",
+      createdBy: "",
+      updatedBy: ""
+    };
+
+    if (item.createdBy) {
+      const account = await AccountAdmin.findOne({
+        _id: item.createdBy,
+        deleted: false,
+      });
+
+      if (account) {
+        rawData.createdBy = account.fullName;
+      }
     }
 
+    if (item.updatedBy) {
+      const account = await AccountAdmin.findOne({
+        _id: item.updatedBy,
+        deleted: false,
+      });
+
+      if (account) {
+        rawData.updatedBy = account.fullName;
+      }
+    };
+    
     rawData.createdAtFormat = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
     rawData.updatedAtFormat = moment(item.updatedAt).format("HH:mm DD/MM/YYYY");
 
@@ -536,7 +560,7 @@ export const categoriesTrashRestore = async (req: admin, res: Response) => {
     });
 
     for (const item of category) {
-      const checkCategoryArray:string[] = item.parentCategoryId.map(category => category === check.id + softDelete.softDelete ? check.id : category);
+      const checkCategoryArray: string[] = item.parentCategoryId.map(category => category === check.id + softDelete.softDelete ? check.id : category);
 
       await Categories.updateOne({
         _id: item.id,
@@ -608,7 +632,7 @@ export const categoriesTrashDelete = async (req: admin, res: Response) => {
       categoryIds: id
     });
 
-    if(product) {
+    if (product) {
       for (const item of product) {
         const checkCategoryArray = item.categoryIds.filter(category => category !== id);
         await Product.updateOne({
