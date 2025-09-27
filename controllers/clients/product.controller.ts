@@ -4,6 +4,7 @@ import { Product } from "../../models/product.model";
 import { paginationCLient } from "../../helpers/pagination.helper";
 import { Style } from "../../models/style.model";
 import { Categories } from "../../models/categories.model";
+import { getAllChildrenCategory } from "../../helpers/category.helper";
 
 const skip = 0;
 const limit = 4;
@@ -15,7 +16,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
       quantity: { $gte: 1 }
     }
 
-    const { search, page, price, quantity } = req.query;
+    const { search, page, price, quantity, categoryId } = req.query;
 
     //sort follow createAt
     const sort: any = {}
@@ -36,6 +37,19 @@ export const getAllProduct = async (req: Request, res: Response) => {
       const keyword = slugify(String(search), { lower: true });
       const regex = new RegExp(keyword);
       find.slug = regex;
+    }
+    //end search
+
+    // Check nếu search tồn tại, khác rỗng, và khác với "" hoặc '""'
+    if (categoryId && String(categoryId).trim() !== "" && String(categoryId).trim() !== '""') {
+      const categories = await Categories.find({
+        deleted: false,
+        status: "active",
+      });
+      const arrayCategory = getAllChildrenCategory(categoryId, categories);
+      find.categoryIds = arrayCategory;
+      console.log(find.categoryIds);
+      //can fix lai khuc nay
     }
     //end search
 
