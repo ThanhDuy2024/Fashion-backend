@@ -9,6 +9,8 @@ import { pagination } from "../../helpers/pagination.helper";
 import { rolePermission } from "../../enums/permission";
 import { softDelete } from "../../enums/softDeleteString";
 import { Product } from "../../models/product.model";
+const skip = 0;
+const limit = 10;
 export const categoryCreate = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if (!permission.includes(rolePermission.create)) {
@@ -117,7 +119,7 @@ export const categoryList = async (req: admin, res: Response) => {
   }
   const countDocuments = await Categories.countDocuments(find);
 
-  const paginationHelper = pagination(countDocuments, parseInt(pageNumber))
+  const paginationHelper = pagination(countDocuments, parseInt(pageNumber), skip, limit);
   //end pagination
 
   const record = await Categories.find(find).limit(paginationHelper.limit).skip(paginationHelper.skip)
