@@ -29,7 +29,7 @@ export const verifyAccount = async (req: admin, res: Response, next: NextFunctio
       image: check.image ? check.image : "",
       phone: check.phone ? check.phone : "",
       address: check.address ? check.address : "",
-      roleName: "",
+      role: "",
       status: check.status,
       permission: [],
     }
@@ -41,7 +41,10 @@ export const verifyAccount = async (req: admin, res: Response, next: NextFunctio
     })
 
     if(role) {
-      finalData.roleName = role.name
+      finalData.role = {
+        roleId: role.id,
+        roleName: role.name
+      }
       finalData.permission = role.permission
     }
 

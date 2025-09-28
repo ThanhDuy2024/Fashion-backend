@@ -89,7 +89,7 @@ export const profile = async (req: admin, res: Response) => {
     image: req.admin.image ? req.admin.image : "",
     phone: req.admin.phone ? req.admin.phone : "",
     address: req.admin.address ? req.admin.address : "",
-    roleName: req.admin.roleName,
+    role: req.admin.role,
     permission: req.admin.permission,
     status: req.admin.status,
   }
@@ -103,20 +103,12 @@ export const profile = async (req: admin, res: Response) => {
 export const profileEdit = async (req: admin, res: Response) => {
   try {
     const { email, status } = req.body;
-    if (status !== "active" && status !== "inactive") {
-      res.status(400).json({
-        code: "error",
-        message: "your status is incorrect!"
-      });
-      return;
-    }
 
     if (req.file) {
       req.body.image = req.file.path;
     } else {
       delete req.body.image;
     }
-
 
     const check = await AccountAdmin.findOne({
       _id: { $ne: req.admin.id },
