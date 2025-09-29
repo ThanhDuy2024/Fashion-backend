@@ -92,6 +92,46 @@ export const getAllProduct = async (req: Request, res: Response) => {
   }
 }
 
+export const getNewestProduct = async (req: Request, res: Response) => {
+  try {
+    const find:any = {
+      deleted: false,
+      status: "active",
+      quantity: { $gte: 1}
+    }
+    const product = await Product.find(find).sort({
+      createdAt: "desc",
+    }).limit(4);
+
+    const finalData:any = []
+    for (const item of product) {
+      const rawData:any = {
+        id: item.id,
+        name: item.name,
+        image: item.image,
+        originPrice: item.originPrice,
+        currentPrice: item.currentPrice,
+      }
+
+      rawData.originPriceFormat = item.originPrice?.toLocaleString("vi-VN");
+      rawData.currentPriceFormat = item.currentPrice?.toLocaleString("vi-VN");
+
+      finalData.push(rawData);
+    }
+    res.json({
+      code: "success",
+      data: finalData
+    });
+    
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
+
 export const getProductDeatail = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

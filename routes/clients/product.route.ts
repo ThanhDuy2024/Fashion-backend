@@ -6,4 +6,5 @@ route.get("/list", productController.getAllProduct);
 
 route.get("/detail/:id", productController.getProductDeatail);
 
+route.get("/newests", productController.getNewestProduct);
 export default route;
