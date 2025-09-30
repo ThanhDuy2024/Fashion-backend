@@ -7,6 +7,7 @@ import { Product } from "../../models/product.model";
 import { Style } from "../../models/style.model";
 import { paginationCLient } from "../../helpers/pagination.helper";
 import slugify from "slugify";
+import { softDelete } from "../../enums/softDeleteString";
 
 export const categoriesTree = async (req: Request, res: Response) => {
 
@@ -28,14 +29,16 @@ export const categoriesTree = async (req: Request, res: Response) => {
     }
 
     for (const parent of item.parentCategoryId) {
-      const check = await Categories.findOne({
-        _id: parent,
-        deleted: false,
-        status: "active"
-      })
+      if (!parent.includes(softDelete.softDelete)) {
+        const check = await Categories.findOne({
+          _id: parent,
+          deleted: false,
+          status: "active"
+        })
 
-      if (check) {
-        rawData.parentCategoryId.push(check.id);
+        if (check) {
+          rawData.parentCategoryId.push(check.id);
+        }
       }
     }
 
@@ -93,8 +96,8 @@ export const getProductInCategory = async (req: Request, res: Response) => {
     }
     //end search
 
-    let pageNumber:number = 1;
-    if(page) {
+    let pageNumber: number = 1;
+    if (page) {
       pageNumber = parseInt(String(page));
     }
     const countDocuments = await Product.countDocuments(find);
@@ -124,14 +127,14 @@ export const getProductInCategory = async (req: Request, res: Response) => {
       rawData.originPriceFormat = rawData.originPrice.toLocaleString("vi-VN");
       rawData.currentPriceFormat = rawData.currentPrice.toLocaleString("vi-VN");
 
-      if(item.styleId) {
+      if (item.styleId) {
         const check = await Style.findOne({
           _id: item.styleId,
           deleted: false,
           status: "active",
         });
 
-        if(check) {
+        if (check) {
           rawData.styleName = check.name;
         }
       }

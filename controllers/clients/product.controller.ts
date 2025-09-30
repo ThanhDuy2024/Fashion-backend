@@ -47,8 +47,7 @@ export const getAllProduct = async (req: Request, res: Response) => {
         status: "active",
       });
       const arrayCategory = getAllChildrenCategory(categoryId, categories);
-      find.categoryIds = arrayCategory;
-      console.log(find.categoryIds);
+      find.categoryIds = { $in: arrayCategory};
       //can fix lai khuc nay
     }
     //end search
