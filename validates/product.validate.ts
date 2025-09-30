@@ -36,7 +36,8 @@ export const productValidate = async (req: Request, res: Response, next: NextFun
         "string.required": "Current price is required!",
         "string.empty": "Current price is blank!"        
       }),
-    orginOfProduction: Joi.allow('')
+    orginOfProduction: Joi.allow(''),
+    status: Joi.allow("")
   })
 
   const { error } = schema.validate(req.body);

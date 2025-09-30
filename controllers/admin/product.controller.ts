@@ -91,10 +91,17 @@ export const create = async (req: admin, res: Response) => {
     req.body.quantity = parseInt(String(quantity));
     req.body.originPrice = parseInt(String(originPrice));
     req.body.currentPrice = parseInt(String(currentPrice));
-    req.body.createdBy = req.admin.id,
-      req.body.updatedBy = req.admin.id,
+    req.body.createdBy = req.admin.id;
+    req.body.updatedBy = req.admin.id;
 
-      await Product.create(req.body);
+    if(req.body.status !== "active" && req.body.status != "inactive") {
+      res.status(400).json({
+        code: "error",
+        message: "Status only active or inactive!"
+      });
+    };
+    
+    await Product.create(req.body);
     res.json({
       code: "success",
       message: "Product has been created!"
