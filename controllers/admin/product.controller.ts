@@ -11,6 +11,8 @@ import moment from "moment";
 import slugify from "slugify";
 import { rolePermission } from "../../enums/permission";
 
+const skip = 0;
+const limit = 10;
 export const create = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if (!permission.includes(rolePermission.productCreate)) {
@@ -170,7 +172,7 @@ export const list = async (req: admin, res: Response) => {
       pageNumber = parseInt(String(page));
     };
     const countDocuments = await Product.countDocuments(find);
-    const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+    const pagination = paginationFeature.pagination(countDocuments, pageNumber, skip, limit);
 
     //end pagination
 

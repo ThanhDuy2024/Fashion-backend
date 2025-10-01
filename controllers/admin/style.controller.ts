@@ -58,12 +58,10 @@ export const styleList = async (req: admin, res: Response) => {
   }
 
   const { search, status, page } = req.query;
-  //search 
-  if(search) {
-    const keyword = slugify(String(search), {
-      lower:true
-    });
-
+  
+  //search
+  if (search && String(search).trim() !== "" && String(search).trim() !== '""') {
+    const keyword = slugify(String(search), { lower: true });
     const regex = new RegExp(keyword);
     find.slug = regex;
   }
@@ -124,7 +122,6 @@ export const styleList = async (req: admin, res: Response) => {
     rawData.createdAtFormat = moment(item.createdAt).format("HH:mm DD/MM/YYYY");
     finalData.push(rawData);
   }
-
 
   res.json({
     code: "success",
