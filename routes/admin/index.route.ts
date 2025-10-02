@@ -9,6 +9,7 @@ import productRoute from "./product.route";
 import userRoute from "./accountClient.route";
 import orderRoute from "./order.route";
 import branchRoute from "./branch.route";
+import dashboardRoute from "./dashboard.route";
 const route = Router();
 
 route.use('/account', accountAdminRoute);
@@ -28,4 +29,6 @@ route.use('/account/user', middleware.verifyAccount, userRoute);
 route.use('/order', middleware.verifyAccount, orderRoute);
 
 route.use('/branch', middleware.verifyAccount, branchRoute);
+
+route.use("/dashboard", middleware.verifyAccount, dashboardRoute);
 export default route;
