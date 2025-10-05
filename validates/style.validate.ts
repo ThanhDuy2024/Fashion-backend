@@ -9,7 +9,8 @@ export const styleValidate = async (req: Request, res: Response, next: NextFunct
         "string.empty": "Name is blank!",
         "string.min": "Name must be at least 3 character long",
         "string.max": "Name is limited to 50 characters only"
-      })
+      }),
+    status: Joi.allow(""),
   })
 
   const { error } = schema.validate(req.body);
