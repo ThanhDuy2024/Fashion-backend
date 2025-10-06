@@ -187,7 +187,7 @@ export const updateOrder = async (req: admin, res: Response) => {
         });
     };
 
-    const { paymentStatus, status } = req.query;
+    const { paymentStatus, status } = req.body;
 
     if(paymentStatus) {
       await Order.updateOne({
