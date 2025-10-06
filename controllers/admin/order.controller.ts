@@ -46,6 +46,7 @@ export const getAllOrder = async (req: admin, res: Response) => {
     for (const item of order) {
       const rawData: any = {
         id: item.id,
+        email: item.email,
         orderList: item.orderList,
         totalAfterDiscount: item.totalAfterDiscount,
         paymentStatus: "",
