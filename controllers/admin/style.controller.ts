@@ -8,6 +8,8 @@ import moment from "moment";
 import slugify from "slugify";
 import { Product } from "../../models/product.model";
 
+const skip = 0;
+const limit = 10;
 export const styleCreate = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if(!permission.includes(rolePermission.styleCreate)) {
@@ -79,7 +81,7 @@ export const styleList = async (req: admin, res: Response) => {
     pageNumber = parseInt(String(page));
   }
   const countDocuments = await Style.countDocuments(find);
-  const pagination = paginationFeature.pagination(countDocuments, pageNumber);
+  const pagination = paginationFeature.pagination(countDocuments, pageNumber, skip, limit);
   //end pagination
   const record = await Style.find(find).sort({
     createdAt: "desc",
