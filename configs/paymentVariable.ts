@@ -23,7 +23,7 @@ export const paymentMethodVariable = [
 export const statusVariable = [
   {
     key: "init",
-    value: "Đang khởi tạo đơn hàng"
+    value: "Khởi tạo"
   },
   {
     key: "inTransit",

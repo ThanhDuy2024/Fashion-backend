@@ -38,7 +38,9 @@ export const getAllAccountClient = async (req: admin, res: Response) => {
     const countDocuments = await AccountClient.countDocuments(find);
     const paginationFeature = pagination(countDocuments, pageNumber);
 
-    const account = await AccountClient.find(find).limit(paginationFeature.limit).skip(paginationFeature.skip);
+    const account = await AccountClient.find(find).limit(paginationFeature.limit).skip(paginationFeature.skip).sort({
+      createdAt: "desc"
+    });
 
     const finalData: any = [];
 
