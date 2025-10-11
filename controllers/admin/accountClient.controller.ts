@@ -5,7 +5,9 @@ import moment from "moment";
 import { pagination } from "../../helpers/pagination.helper";
 import { AccountAdmin } from "../../models/accountAdmin.model";
 import { rolePermission } from "../../enums/permission";
-
+import slugify from "slugify";
+const skip = 0;
+const limit = 10;
 export const getAllAccountClient = async (req: admin, res: Response) => {
   const { permission } = req.admin;
   if(!permission.includes(rolePermission.accountClientList)) {
@@ -19,11 +21,14 @@ export const getAllAccountClient = async (req: admin, res: Response) => {
       deleted: false,
     }
 
-    const { search_email, status, page } = req.query;
+    const { search, status, page } = req.query;
 
-    if (search_email) {
-      const regex = new RegExp(String(search_email));
-      find.email = regex;
+    if (search && String(search).trim() !== "" && String(search).trim() !== '""') {
+      const keyword = slugify(String(search), {
+        lower: true
+      })
+      const regex = new RegExp(String(keyword));
+      find.slug = regex;
     };
 
     if (status === "active" || status === "inactive") {
@@ -36,7 +41,7 @@ export const getAllAccountClient = async (req: admin, res: Response) => {
       pageNumber = parseInt(String(page));
     };
     const countDocuments = await AccountClient.countDocuments(find);
-    const paginationFeature = pagination(countDocuments, pageNumber);
+    const paginationFeature = pagination(countDocuments, pageNumber, skip, limit);
 
     const account = await AccountClient.find(find).limit(paginationFeature.limit).skip(paginationFeature.skip).sort({
       createdAt: "desc"
