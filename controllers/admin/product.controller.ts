@@ -269,7 +269,7 @@ export const deltail = async (req: admin, res: Response) => {
       quantity: check.quantity,
       originPrice: check.originPrice,
       currentPrice: check.currentPrice,
-      orginOfProduction: check.orginOfProduction,
+      originOfProduction: check.originOfProduction || "",
       status: check.status,
       createdByFormat: "",
       updatedByFormat: "",

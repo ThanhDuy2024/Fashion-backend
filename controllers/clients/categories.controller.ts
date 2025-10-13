@@ -121,7 +121,7 @@ export const getProductInCategory = async (req: Request, res: Response) => {
         quantity: item.quantity,
         originPrice: item.originPrice,
         currentPrice: item.currentPrice,
-        orginOfProduction: item.orginOfProduction,
+        originOfProduction: item.originOfProduction,
       };
 
       rawData.originPriceFormat = rawData.originPrice.toLocaleString("vi-VN");

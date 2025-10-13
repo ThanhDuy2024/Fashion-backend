@@ -161,7 +161,7 @@ export const getProductDeatail = async (req: Request, res: Response) => {
       quantity: item.quantity,
       originPrice: item.originPrice,
       currentPrice: item.currentPrice,
-      orginOfProduction: item.orginOfProduction,
+      originOfProduction: item.originOfProduction,
     };
 
     finalData.originPriceFormat = finalData.originPrice.toLocaleString("vi-VN");

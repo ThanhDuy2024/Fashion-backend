@@ -16,7 +16,7 @@ const schema = new Schema({
   quantity: Number,
   originPrice: Number,
   currentPrice: Number,
-  orginOfProduction: String, //xuat su
+  originOfProduction: String, //xuat su
   status: {
     type: String,
     default: "active"
