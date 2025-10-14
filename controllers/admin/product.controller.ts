@@ -346,7 +346,6 @@ export const edit = async (req: admin, res: Response) => {
   }
   try {
     const { id } = req.params;
-
     const check = await Product.findOne({
       _id: id,
       deleted: false
@@ -360,7 +359,6 @@ export const edit = async (req: admin, res: Response) => {
     }
 
     const { categoryIds, styleId, season, size, quantity, originPrice, currentPrice } = req.body;
-
     if (categoryIds) {
       req.body.categoryIds = JSON.parse(categoryIds);
       req.body.categoryIds = new Set(req.body.categoryIds);
@@ -441,6 +439,7 @@ export const edit = async (req: admin, res: Response) => {
       message: "Product has been edited!"
     })
   } catch (error) {
+    console.log(error);
     res.status(404).json({
       code: "error",
       message: "Some item is not found in data!"
