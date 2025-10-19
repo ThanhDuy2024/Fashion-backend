@@ -5,7 +5,8 @@ import { paymentMethodVariable, paymentStatusVariable, statusVariable } from "..
 import { pagination } from "../../helpers/pagination.helper";
 import moment from "moment";
 import { AccountClient } from "../../models/accountClient.model";
-
+const skip = 0;
+const limit = 10;
 export const getAllOrder = async (req: admin, res: Response) => {
   try {
     const find: any = {
@@ -14,7 +15,7 @@ export const getAllOrder = async (req: admin, res: Response) => {
 
     const { search, price, paymentStatus, status, page } = req.query;
 
-    if (search) {
+    if (search && String(search).trim() !== "" && String(search).trim() !== '""') {
       find.email = search;
     }
 
@@ -24,7 +25,7 @@ export const getAllOrder = async (req: admin, res: Response) => {
       sort.totalAfterDiscount = price;
     };
 
-    if (paymentStatus) {
+    if (paymentStatus && String(paymentStatus).trim() !== "" && String(paymentStatus).trim() !== '""') {
       find.paymentStatus = paymentStatus;
     };
 
@@ -37,7 +38,7 @@ export const getAllOrder = async (req: admin, res: Response) => {
       pageNumber = parseInt(String(page));
     };
     const countDocument = await Order.countDocuments(find);
-    const paginationFeature = pagination(countDocument, pageNumber);
+    const paginationFeature = pagination(countDocument, pageNumber, skip, limit);
 
     const order = await Order.find(find).sort(sort).limit(paginationFeature.limit).skip(paginationFeature.skip);
 
