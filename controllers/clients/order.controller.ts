@@ -8,7 +8,8 @@ import moment from "moment";
 import { paymentStatusVariable, statusVariable } from "../../configs/paymentVariable";
 import { htmlCreatedOrder } from "../../helpers/htmlContext.helper";
 import { sendEmail } from "../../helpers/nodemailer.helper";
-
+const skip = 0
+const limit = 5
 export const createOrder = async (req: client, res: Response) => {
   try {
 
@@ -145,7 +146,7 @@ export const getAllOrder = async (req: client, res: Response) => {
       pageNumber = parseInt(String(page));
     };
     const countDocument = await Order.countDocuments(find);
-    const pagination = paginationCLient(countDocument, pageNumber);
+    const pagination = paginationCLient(countDocument, pageNumber, skip, limit);
 
     const orderList = await Order.find(find).sort({ createdAt: "desc" }).skip(pagination.skip).limit(pagination.limit);
 
