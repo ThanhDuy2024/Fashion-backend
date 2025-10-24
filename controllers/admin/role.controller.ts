@@ -74,7 +74,7 @@ export const roleList = async (req: admin, res: Response) => {
 
   const { search, status, page } = req.query;
   //search
-  if(search) {
+  if(search && String(search).trim() !== "" && String(search).trim() !== '""') {
     const keyword = slugify(String(search), {
       lower: true
     });
@@ -108,7 +108,6 @@ export const roleList = async (req: admin, res: Response) => {
     const rawData:any = {
       id: item.id,
       name: item.name,
-      permission: item.permission,
       status: item.status,
       createdByFormat: "",
       updatedByFormat: ""

@@ -268,7 +268,7 @@ export const deleteOrder = async (req: client, res: Response) => {
     if (!item) {
       return res.status(404).json({
         code: "error",
-        message: "Order is not found!"
+        message: "Đơn hàng của bạn không thể bị hủy do bạn đã thanh toán!"
       });
     }
 
