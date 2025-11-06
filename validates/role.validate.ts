@@ -11,7 +11,8 @@ export const roleValidate = async (req: Request, res: Response, next: NextFuncti
         "string.max": "The role is limited to 50 characters only!",
         "any.required": "The role name is required!"
       }),
-    permission: Joi.allow()
+    permission: Joi.allow(),
+    status: Joi.allow()
   })
 
   const { error } = schema.validate(req.body);
