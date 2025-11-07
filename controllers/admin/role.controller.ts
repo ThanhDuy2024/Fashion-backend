@@ -175,6 +175,7 @@ export const roleDetail = async (req: admin, res: Response) => {
       id: role.id,
       name: role.name,
       permission: role.permission,
+      status: role.status,
       createdByFormat: "",
       updatedByFormat: "",
     }
