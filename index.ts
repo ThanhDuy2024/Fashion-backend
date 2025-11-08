@@ -4,9 +4,11 @@ import cors from "cors"
 import cookieParser from "cookie-parser";
 import adminRoute from "./routes/admin/index.route";
 import clientRoute from "./routes/clients/index.route";
+import testRoute from "./tests/vnPayRoute";
 import * as database from "./configs/database";
 const app = express();
 const port = process.env.PORT;
+app.set("trust proxy", true);
 
 database.connect();
 app.use(cookieParser());
@@ -21,6 +23,7 @@ app.use(cors({
 
 app.use("/api/client", clientRoute)
 app.use("/api/admin", adminRoute)
+app.use("/api/test", testRoute)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
