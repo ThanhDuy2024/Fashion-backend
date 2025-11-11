@@ -109,6 +109,7 @@ export const createOrder = async (req: client, res: Response) => {
     finalData.totalOrder = total;
     finalData.totalAfterDiscount = totalAfterDiscount;
 
+    //create order here
     const result = await Order.create(finalData);
 
     const date = moment(result.createdAt).format("HH:mm DD/MM/YYYY");

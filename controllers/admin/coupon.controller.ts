@@ -68,7 +68,7 @@ export const list = async (req: admin, res: Response) => {
   const { search, page, status } = req.query;
 
   //search
-  if (search) {
+  if (search && String(search).trim() !== "" && String(search).trim() !== '""') {
     const keyword = slugify(String(search), {
       lower: true
     });
@@ -104,6 +104,8 @@ export const list = async (req: admin, res: Response) => {
     const rawData: any = {
       id: item.id,
       name: item.name,
+      status: item.status,
+      discount: item.discount,
       createdByFormat: "",
       updatedByFornat: "",
     }
