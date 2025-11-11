@@ -510,3 +510,24 @@ export const roleTrashDelete = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const getAllRole = async (req: admin, res: Response) => {
+  try {
+    const roleList = await Role.find({
+      status: "active"
+    }).select({
+      id: 1,
+      name: true
+    });
+    
+    res.json({
+      code: "success",
+      data: roleList,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: "error",
+      message: error
+    })
+  }
+}
