@@ -282,6 +282,11 @@ export const orderZaloPay = async (req: client, res: Response) => {
     finalData.totalOrder = total;
     finalData.totalAfterDiscount = totalAfterDiscount;
 
+
+    //Khi thanh toan qua zaloPay
+    //paymentStatus => paid
+    //status => init
+
     res.json({
       code: "success",
       message: "Buy success",
@@ -347,18 +352,33 @@ export const deleteOrder = async (req: client, res: Response) => {
   try {
     const { id } = req.params;
 
-    const item = await Order.findOne({
+    const orderCheck = await Order.findOne({
       _id: id,
       userId: req.client.id,
       paymentStatus: "unpaid",
       deleted: false
     });
 
-    if (!item) {
+    if (!orderCheck) {
       return res.status(404).json({
         code: "error",
-        message: "Đơn hàng của bạn không thể bị hủy do bạn đã thanh toán!"
+        message: "Đơn hàng của bạn không thể bị hủy do bạn đã thanh toán vui lòng liên hệ qua phần liên lạc!"
       });
+    }
+
+    for (const item of orderCheck.orderList) {
+      const checkItem = await Product.findOne({
+        _id: item.id,
+        deleted: false
+      });
+
+      if(checkItem) {
+        await Product.updateOne({
+          _id: checkItem.id
+        }, {
+          quantity: Number(checkItem.quantity) + item.quantity
+        })
+      }
     }
 
     await Order.deleteOne({
