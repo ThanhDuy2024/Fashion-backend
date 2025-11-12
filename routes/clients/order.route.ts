@@ -11,5 +11,5 @@ route.get("/detail/:id", middleware.verify, orderController.orderDetail)
 
 route.delete("/delete/:id", middleware.verify, orderController.deleteOrder)
 
-route.get("/zaloPay", middleware.verify, orderController.orderZaloPay);
+route.post("/zaloPay", middleware.verify, orderController.orderZaloPay);
 export default route;

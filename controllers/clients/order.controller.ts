@@ -24,7 +24,7 @@ export const createOrder = async (req: client, res: Response) => {
       paymentMethod: req.body.paymentMethod
     };
 
-    if(!finalData.address && !finalData.phone) {
+    if (!finalData.address && !finalData.phone) {
       return res.status(400).json({
         code: "error",
         message: "you have not updated phone and address!"
@@ -195,9 +195,97 @@ export const getAllOrder = async (req: client, res: Response) => {
 
 export const orderZaloPay = async (req: client, res: Response) => {
   try {
+    const finalData: any = {
+      userId: req.client.id,
+      email: req.client.email,
+      address: req.client.address,
+      phone: req.client.phone,
+      orderList: [],
+      coupon: "",
+      discount: "",
+      paymentMethod: req.body.paymentMethod
+    }
+
+    for (const item of req.body.arrayOrder) {
+      const checkItem = await Product.findOne({
+        _id: item.id,
+        status: "active",
+        deleted: false,
+        quantity: { $gte: item.quantity },
+        size: item.size
+      })
+
+      if (!checkItem) {
+        return res.status(404).json({
+          code: "error",
+          message: "Item is not found!"
+        })
+      };
+
+      finalData.orderList.push({
+        id: item.id,
+        name: item.name,
+        image: item.image,
+        quantity: item.quantity,
+        size: item.size,
+        price: checkItem.currentPrice ? checkItem.currentPrice : checkItem.originPrice
+      });
+
+      await Product.updateOne({
+        _id: checkItem.id,
+      }, {
+        quantity: Number(checkItem.quantity) - item.quantity
+      })
+    }
+
+    if(req.body.coupon) {
+      const checkCoupon = await Coupon.findOne({
+        name: req.body.coupon,
+        status: "active",
+      });
+
+      if(!checkCoupon) {
+        return res.status(404).json({
+          code: "error",
+          message: "Coupon is not found!"
+        });
+      }
+
+      const checkOrder = await Order.findOne({
+        userId: req.client.id,
+        coupon: checkCoupon.name,
+        deleted: false
+      })
+
+      if(checkOrder) {
+        return res.status(400).json({
+          code: "error",
+          message: "Coupon has been used!"
+        });
+      }
+      finalData.coupon = checkCoupon.name;
+      finalData.discount = String(checkCoupon.discount) + "%"
+    }
+
+    // Xử lý giảm giá
+    let discountPercent = 0;
+    if (finalData.discount) {
+      discountPercent = parseFloat(finalData.discount.replace("%", ""));
+    }
+
+    const total = finalData.orderList.reduce((sum: any, item: any) => {
+      return sum + item.price * item.quantity;
+    }, 0);
+
+
+    let totalAfterDiscount = total - (total * discountPercent / 100);
+    finalData.totalOrder = total;
+    finalData.totalAfterDiscount = totalAfterDiscount;
+
     res.json({
       code: "success",
       message: "Buy success",
+      data: finalData
     });
   } catch (error) {
     console.log(error);
