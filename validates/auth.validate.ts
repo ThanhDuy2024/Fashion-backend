@@ -83,6 +83,8 @@ export const profileValidate = (req: Request, res: Response, next: NextFunction)
     address: Joi.string().allow(""),
     phone: Joi.string().allow(""),
     image: Joi.string().allow(""),
+    roleId: Joi.string().allow(""),
+    status: Joi.string().allow("")
   })
 
   const { error } = schema.validate(req.body);

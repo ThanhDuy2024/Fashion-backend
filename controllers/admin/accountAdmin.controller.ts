@@ -554,6 +554,7 @@ export const edit = async (req: admin, res: Response) => {
       message: "Account has been edited!"
     });
   } catch (error) {
+    console.log(error);
     res.status(404).json({
       code: "error",
       message: error,
