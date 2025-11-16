@@ -8,6 +8,8 @@ import moment from "moment";
 import { paymentStatusVariable, statusVariable } from "../../configs/paymentVariable";
 import { htmlCreatedOrder } from "../../helpers/htmlContext.helper";
 import { sendEmail } from "../../helpers/nodemailer.helper";
+const axios = require('axios').default; // npm install axios
+const CryptoJS = require('crypto-js'); // npm install crypto-js
 const skip = 0
 const limit = 5
 export const createOrder = async (req: client, res: Response) => {
@@ -282,6 +284,49 @@ export const orderZaloPay = async (req: client, res: Response) => {
     finalData.totalOrder = total;
     finalData.totalAfterDiscount = totalAfterDiscount;
 
+    const orderSave = await Order.create(finalData);
+    console.log(orderSave.id);
+
+    const config = {
+      app_id: process.env.ZALOPAY_APP_ID,
+      key1: process.env.ZALOPAY_KEY1,
+      key2: process.env.ZALOPAY_KEY2,
+      endpoint: process.env.ZALOPAY_ENDPOINT
+    };
+
+    const embed_data = {
+      redirecturl: `http://localhost:5173/`
+    };
+
+    const items = [{
+      itemname: "Thanh toán dịnh vụ shop thời trang"
+    }];
+    const transID = Math.floor(Math.random() * 1000000);
+    const order:any = {
+      app_id: config.app_id,
+      app_trans_id: `${moment().format('YYMMDD')}_${transID}`, // translation missing: vi.docs.shared.sample_code.comments.app_trans_id
+      app_user: `Thông tin hóa đơn`,
+      app_time: Date.now(), // miliseconds
+      item: JSON.stringify(items),
+      embed_data: JSON.stringify(embed_data),
+      amount: finalData.totalAfterDiscount, //So tien cua don hang
+      description: `Thông tin đơn hàng #${orderSave.id}`, //thong tin cua don hang
+      bank_code: "", //Bo rong de thanh toan duoc nhieu phuong thuc hon
+      callback_url: `http://localhost:5173/`
+    };
+
+    // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+    const data = config.app_id + "|" + order.app_trans_id + "|" + order.app_user + "|" + order.amount + "|" + order.app_time + "|" + order.embed_data + "|" + order.item;
+    order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+
+    const response = await axios.post(config.endpoint, null, { params: order })
+    if (response.data.return_code == 1) {
+      res.json({
+        url: response.data.order_url
+      });
+    } else {
+      res.redirect("/");
+    }
 
     //Khi thanh toan qua zaloPay
     //paymentStatus => paid
