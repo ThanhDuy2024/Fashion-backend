@@ -7,12 +7,14 @@
     "dev": "nodemon index.ts"
   },
   "dependencies": {
+    "@redis/client": "^5.9.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.2.1",
+    "add": "^2.0.6",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
@@ -33,6 +35,7 @@
     "slugify": "^1.6.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2",
-    "vnpay": "^2.4.4"
+    "vnpay": "^2.4.4",
+    "yarn": "^1.22.22"
   }
 }
