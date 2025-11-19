@@ -6,11 +6,12 @@ import adminRoute from "./routes/admin/index.route";
 import clientRoute from "./routes/clients/index.route";
 import testRoute from "./tests/vnPayRoute";
 import * as database from "./configs/database";
+import * as redisDatabase from "./tests/redisTest";
 const app = express();
 const port = process.env.PORT;
 app.set("trust proxy", true);
-
 database.connect();
+redisDatabase.connectRedis();
 app.use(cookieParser());
 app.use(express.json());
 
