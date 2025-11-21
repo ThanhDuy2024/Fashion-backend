@@ -3,6 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { admin } from "../interface/admin.interface";
 import { AccountAdmin } from "../models/accountAdmin.model";
 import { Role } from "../models/role.model";
+import client from "../tests/redisTest";
 
 export const verifyAccount = async (req: admin, res: Response, next: NextFunction) => {
   try {
@@ -13,12 +14,20 @@ export const verifyAccount = async (req: admin, res: Response, next: NextFunctio
       deleted: false,
       status: "active",
     });
-
+    
     if (!check) {
       res.status(404).json({
         code: "error",
         message: "Your token is broken!"
       });
+      return;
+    };
+
+    const tokenUnique = await client.get(String(check.email));
+
+    if(tokenUnique != token) {
+      res.clearCookie("refreshToken");
+      res.redirect("http://localhost:5173/admin/login");
       return;
     }
 

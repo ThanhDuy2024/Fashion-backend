@@ -8,7 +8,7 @@ import moment from "moment";
 import slugify from "slugify";
 import * as paginationFeature from "../../helpers/pagination.helper";
 import { rolePermission } from "../../enums/permission";
-
+import client from "../../tests/redisTest";
 export const register = async (req: Request, res: Response) => {
   const check = await AccountAdmin.findOne({
     email: req.body.email,
@@ -38,7 +38,6 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-
   const check = await AccountAdmin.findOne({
     email: email,
     deleted: false,
@@ -63,12 +62,20 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
+  const token = await client.get(email);
+
+  if(token) {
+    await client.del(email);
+  }
+
   const refreshToken = jwt.sign({
     fullName: check.fullName,
     email: check.email
   }, String(process.env.JWT_REFRESH_TOKEN), {
     expiresIn: "30d"
-  })
+  });
+
+  await client.set(email, refreshToken);
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
