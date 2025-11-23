@@ -8,7 +8,7 @@ import moment from "moment";
 import slugify from "slugify";
 import * as paginationFeature from "../../helpers/pagination.helper";
 import { rolePermission } from "../../enums/permission";
-import client from "../../tests/redisTest";
+import client from "../../configs/redis";
 export const register = async (req: Request, res: Response) => {
   const check = await AccountAdmin.findOne({
     email: req.body.email,
