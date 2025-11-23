@@ -6,7 +6,7 @@ import adminRoute from "./routes/admin/index.route";
 import clientRoute from "./routes/clients/index.route";
 import testRoute from "./tests/vnPayRoute";
 import * as database from "./configs/database";
-import * as redisDatabase from "./tests/redisTest";
+import * as redisDatabase from "./configs/redis";
 const app = express();
 const port = process.env.PORT;
 app.set("trust proxy", true);

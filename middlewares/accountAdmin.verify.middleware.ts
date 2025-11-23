@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { admin } from "../interface/admin.interface";
 import { AccountAdmin } from "../models/accountAdmin.model";
 import { Role } from "../models/role.model";
-import client from "../tests/redisTest";
+import client from "../configs/redis";
 
 export const verifyAccount = async (req: admin, res: Response, next: NextFunction) => {
   try {
