@@ -77,12 +77,10 @@ export const dashboardOrder = async (req: admin, res: Response) => {
       }
     }
 
-    console.log(orderMonth);
-
     res.json({
       code: "success",
       data: orderMonth
-    })
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({
