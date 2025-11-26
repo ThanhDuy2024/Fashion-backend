@@ -89,3 +89,16 @@ export const dashboardOrder = async (req: admin, res: Response) => {
     })
   }
 }
+
+export const totalPrice = async (req: admin, res: Response) => {
+  try {
+    res.json({
+      code: "success"
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      code: "error"
+    })
+  }
+}
