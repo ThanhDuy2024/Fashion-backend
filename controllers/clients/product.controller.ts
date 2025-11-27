@@ -7,7 +7,7 @@ import { Categories } from "../../models/categories.model";
 import { getAllChildrenCategory } from "../../helpers/category.helper";
 
 const skip = 0;
-const limit = 4;
+const limit = 10;
 export const getAllProduct = async (req: Request, res: Response) => {
   try {
     const find: any = {
