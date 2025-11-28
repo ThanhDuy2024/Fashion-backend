@@ -92,8 +92,25 @@ export const dashboardOrder = async (req: admin, res: Response) => {
 
 export const totalPrice = async (req: admin, res: Response) => {
   try {
+    const orderSuccess = await Order.find({
+      deleted: false,
+      paymentStatus: "paid"
+    }).select({
+      id: 1,
+      totalAfterDiscount: 1
+    });
+
+    let totalPrice = 0;
+    for (const item of orderSuccess) {
+      totalPrice += item.totalAfterDiscount;
+    }
+
+    const totalOrder = await Order.countDocuments({});
+
     res.json({
-      code: "success"
+      code: "success",
+      totalPrice: totalPrice,
+      totalOrder: totalOrder
     })
   } catch (error) {
     console.log(error);
