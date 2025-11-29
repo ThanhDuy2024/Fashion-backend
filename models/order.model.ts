@@ -37,7 +37,7 @@ const schema = new Schema({
   paymentMethod: {
     type: String,
     default: "offline",
-    enum: ["offline", "zalopay"]
+    enum: ["offline", "bank"]
   },
   status: {
     type: String,

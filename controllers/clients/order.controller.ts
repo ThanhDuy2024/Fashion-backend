@@ -207,6 +207,7 @@ export const orderZaloPay = async (req: client, res: Response) => {
       discount: "",
       paymentMethod: req.body.paymentMethod
     }
+    console.log(finalData);
 
     for (const item of req.body.arrayOrder) {
       const checkItem = await Product.findOne({
@@ -332,11 +333,11 @@ export const orderZaloPay = async (req: client, res: Response) => {
     //paymentStatus => paid
     //status => init
 
-    res.json({
-      code: "success",
-      message: "Buy success",
-      data: finalData
-    });
+    // res.json({
+    //   code: "success",
+    //   message: "Buy success",
+    //   data: finalData
+    // });
   } catch (error) {
     console.log(error);
     res.status(400).json({

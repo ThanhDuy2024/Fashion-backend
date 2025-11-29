@@ -15,7 +15,7 @@ export const paymentMethodVariable = [
     value: "Thanh toán trực tiếp"
   },
   {
-    key: "zalopay",
+    key: "bank",
     value: "Thanh toán bằng zalopay"
   }
 ]
