@@ -2,6 +2,8 @@ import { Response } from "express";
 import { admin } from "../../interface/admin.interface";
 import { Order } from "../../models/order.model";
 import moment, { months } from "moment";
+import { AccountClient } from "../../models/accountClient.model";
+import { Product } from "../../models/product.model";
 const currentYear = new Date().getFullYear();
 export const dashboardOrder = async (req: admin, res: Response) => {
   try {
@@ -107,11 +109,18 @@ export const totalPrice = async (req: admin, res: Response) => {
 
     const totalOrder = await Order.countDocuments({});
 
+    const totalUser = await AccountClient.countDocuments({});
+
+    const totalProduct = await Product.countDocuments({});
+
     res.json({
       code: "success",
       totalPrice: totalPrice,
-      totalOrder: totalOrder
-    })
+      totalOrder: totalOrder,
+      totalUser: totalUser,
+      totalProduct: totalProduct
+    });
+
   } catch (error) {
     console.log(error);
     res.status(400).json({

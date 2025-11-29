@@ -4,5 +4,5 @@ const route = Router();
 
 route.get("/list", dashboardController.dashboardOrder);
 
-route.get("/totalPrice", dashboardController.totalPrice);
+route.get("/total", dashboardController.totalPrice);
 export default route;
