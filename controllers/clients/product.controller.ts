@@ -208,3 +208,25 @@ export const getProductDeatail = async (req: Request, res: Response) => {
     })
   }
 }
+
+export const getProductCheap = async (req: Request, res: Response) => {
+  try {
+    const find:any = {
+      deleted: false,
+      status: "active",
+    };
+
+    const product = await Product.find(find).sort({
+      currentPrice: "asc",
+    }).limit(4);
+    res.json({
+      code: "success",
+      data: product,
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({
+      code: "error"
+    })
+  }
+}
