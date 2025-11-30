@@ -332,12 +332,12 @@ export const orderZaloPay = async (req: client, res: Response) => {
     //Khi thanh toan qua zaloPay
     //paymentStatus => paid
     //status => init
-
-    // res.json({
-    //   code: "success",
-    //   message: "Buy success",
-    //   data: finalData
-    // });
+    await Order.updateOne({
+      _id: orderSave.id,
+    }, {
+      paymentStatus: "paid",
+      status: "init"
+    });
   } catch (error) {
     console.log(error);
     res.status(400).json({
